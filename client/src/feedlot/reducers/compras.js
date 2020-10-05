@@ -1,8 +1,11 @@
-import {CANCEL_COMPRA,SET_SECTION,KEEP_VENDOR,KEEP_CONSIG, SET_STEP,KEEP_FACTURACION} from '../actions/compras'
+import {CANCEL_COMPRA,SET_SECTION,KEEP_VENDOR,KEEP_CONSIG, SET_STEP,KEEP_FACTURACION,
+COMISSION_SWICH,CONSIG_SWICH} from '../actions/compras'
 const initialState = {
     section: null,
 
     step:"1",
+    ifconsig:true,
+    ifcomission:true,
 
     vendedor:{   
       vendor_razon_social:"",
@@ -66,6 +69,19 @@ export default function global(state = initialState, action){
     return{
       ...state,
       step:action.payload,
+         }
+  }
+
+  if (action.type === COMISSION_SWICH){
+    return{
+      ...state,
+      ifcomission:action.payload,
+         }
+  }
+  if (action.type === CONSIG_SWICH){
+    return{
+      ...state,
+      ifconsig:action.payload,
          }
   }
   return state

@@ -68,7 +68,8 @@ const Compras = (props) =>{
                 <Grid >
                     {section ==="nuevaCompra" ? <NuevaCompra 
                     rodeo={props.rodeo}
-                    establecimiento={props.establecimiento} /> : null}
+                    establecimiento={props.establecimiento}
+                    data={props.data} /> : null}
                     {section ==="historial" ? <HistorialCompras 
                     rodeo={props.rodeo}
                     establecimiento={props.establecimiento}
