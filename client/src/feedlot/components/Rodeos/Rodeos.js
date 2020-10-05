@@ -181,6 +181,7 @@ const Rodeos = (props) =>{
                    {section ==="compras" ? <Compras 
                     rodeo={rodeo}
                     establecimiento={establecimiento}
+                    data={establecimientos}
                    /> : null}
                 </Grid> 
             </div>

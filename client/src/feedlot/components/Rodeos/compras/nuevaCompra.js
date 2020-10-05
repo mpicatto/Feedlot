@@ -9,7 +9,10 @@ export function NuevaCompra(props) {
     return (
       <Grid>
         {props.step==="1"?<Step1 />:null}
-        {props.step==="2"?<Step2 />:null}
+        {props.step==="2"?<Step2 
+                    rodeo={props.rodeo}
+                    establecimiento={props.establecimiento}
+                    data={props.data}  />:null}
       </Grid>
       
     )

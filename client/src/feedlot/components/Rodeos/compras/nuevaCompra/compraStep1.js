@@ -9,7 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
-import {cancelCompra,keepConsig,keepVendor,setStep,keepFactura} from '../../../../actions/compras'
+import {cancelCompra,keepConsig,keepVendor,setStep,keepFactura, comissionSwich,consigSwich} from '../../../../actions/compras'
 import {connect} from 'react-redux';
 
 //ESTILOS DE MATERIAL UI
@@ -38,11 +38,14 @@ export function Step1(props) {
       setVendedor(props.vendedor)
       setConsignatario(props.consignatario)
       setFacturas(props.facturas)
-    },[props.vendedor, props.consignatario,props.facturas])
+      setComission(props.ifcomission)
+      setIfConsignatario(props.ifconsig)
+    },[props.vendedor, props.consignatario,props.facturas,props.ifcomission,props.ifconsig])
 
     const [vendedor, setVendedor] = useState({})
     const [consignatario, setConsignatario] = useState({})
-    const [disable,setDisable]=useState(true)
+    const [comission,setComission]=useState(true)
+    const [ifConsignatario,setIfConsignatario]=useState(true)
     const [facturas, setFacturas]=useState({})
     const [vendorErrors, setVendorErrors] = useState({})
     const [consigErrors, setConsigErrors] = useState({})
@@ -79,9 +82,14 @@ export function Step1(props) {
         console.log(facturas)
       }
 
+      const handleIfConsig= function(e){
+        setIfConsignatario(!e.target.checked)
+        console.log(ifConsignatario)
+      }  
+
       const handleComission = function(e){
-        setDisable(!e.target.checked)
-        console.log(disable)
+        setComission(!e.target.checked)
+        console.log(comission)
       }                              
 
       const cancelFunc = function(e){
@@ -94,6 +102,8 @@ export function Step1(props) {
           props.keepVendor(vendedor)
           props.keepConsig(consignatario)
           props.keepFactura(facturas)
+          props.comissionSwich(comission)
+          props.consigSwich(ifConsignatario)
           props.setStep("2")
           
       }
@@ -191,8 +201,18 @@ export function Step1(props) {
                         onChange={(e)=>handleVendorData(e)}
                     />
                     </Grid>
-                   
+                    <Grid item item xs={12} sm={6}>
+                    <FormControlLabel
+                        control={<Switch color="primary" />}
+                        label="Actuó Consignatario"
+                        value="on"
+                        checked={!ifConsignatario}
+                        onChange={(e)=>handleIfConsig(e)}
+                        />
+                    </Grid>
                 </Grid>
+                {!ifConsignatario?
+                <Grid>
                 <Grid className={classes.container}> 
                     <Typography component="h1" variant="h5">
                     Datos del Consignatario
@@ -271,7 +291,10 @@ export function Step1(props) {
                         onChange={(e)=>handleConsigData(e)}
                     />
                     </Grid>
-                </Grid>
+                 </Grid>
+                </Grid>:null}
+
+
                     <Grid className={classes.container}> 
                       <Typography component="h1" variant="h5">
                         Detalle de la Compra
@@ -337,11 +360,12 @@ export function Step1(props) {
                         control={<Switch color="primary" />}
                         label="Comisiones a cargo del comprador"
                         value="on"
+                        checked={!comission}
                         onChange={(e)=>handleComission(e)}
                         />
                     </Grid>
                     <Grid item item xs={12} sm={3}>
-                    {!disable ? <TextField
+                    {!comission ? <TextField
                         variant="outlined"
                         required
                         fullWidth
@@ -353,7 +377,7 @@ export function Step1(props) {
                     />:null}
                     </Grid>
                     <Grid item item xs={12} sm={3}>
-                   {!disable? <TextField
+                   {!comission? <TextField
                         variant="outlined"
                         required
                         fullWidth
@@ -411,7 +435,9 @@ const mapStateToProps = state => {
     vendedor:state.compras.vendedor,
     consignatario:state.compras.consignatario,
     step:state.compras.step,
-    facturas:state.compras.facturas
+    facturas:state.compras.facturas,
+    ifcomission:state.compras.ifcomission,
+    ifconsig:state.compras.ifconsig
   }		
 }
 
@@ -421,7 +447,9 @@ const mapDispatchToProps = dispatch => {
     keepVendor:(vendor)=>dispatch(keepVendor(vendor)),
     keepConsig:(consig)=>dispatch(keepConsig(consig)),
     keepFactura:(bills)=>dispatch(keepFactura(bills)),
-    setStep:(number)=>dispatch(setStep(number))
+    setStep:(number)=>dispatch(setStep(number)),
+    comissionSwich:(seleccion)=>dispatch(comissionSwich(seleccion)),
+    consigSwich:(seleccion)=>dispatch(consigSwich(seleccion))
   }
 }
     
