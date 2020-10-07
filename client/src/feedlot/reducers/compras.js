@@ -60,16 +60,17 @@ const initialState = {
         pesoinicial:"" ,
         pesoactual:"",
         establecimientoid:"",
-         rodeoid:" ",
+        rodeoid:" ",
 
       },
 
       guiaN:{
         guia:"",
+        fechaDescarga:"",
         pesajePlace: "",
         ticket: "",
         peso: "",
-        cantAnimales: "",
+        cantAnimales: 0,
         animales:[]
       },
 

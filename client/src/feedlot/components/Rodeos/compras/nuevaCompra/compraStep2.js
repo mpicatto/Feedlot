@@ -38,17 +38,28 @@ const useStyles = makeStyles((theme) => ({
 
 export function Step2(props) {
     const classes = useStyles()
+    let cattleInitial ={
+      cug: "",
+      manejo: "",
+      verificador: "",
+      raza: "",
+      sexo: "",
+      frame: "",
+      pesoinicial:"" ,
+      pesoactual:"",
+      establecimientoid:"",
+      rodeoid:" ",
+    }
 
     useEffect(()=>{
-      setGuia(props.guia)
-      setGuiaS(props.guias)
-      setTransporte(props.transporte)
-      setFacturaTransporte(props.facturaTransporte)
-      setAnimalDetail(props.animalDetail)
-      setAnimalArray(props.animalArray)
-      setFlete(props.ifTransporte)
-    },[props.guia, props.guias,props.transporte,props.facturaTransporte,
-      props.animalDetail,props.animalArray,props.ifTransporte])
+      setGuia(props.guiaN)
+      setGuiaS(props.guiass)
+      setTransporte(props.transport)
+      setFacturaTransporte(props.facturaTransport)
+      setAnimalDetail(props.cattleDetail)
+      setAnimalArray(props.cattleArray)
+      setFlete(props.ifTransport)
+    },[props.guiaN, props.guiass,props.transport,props.facturaTransport,props.cattleArray,props.ifTransport])
    
     const [guia, setGuia] = useState({})
     const [guiaS, setGuiaS] = useState({})
@@ -59,8 +70,8 @@ export function Step2(props) {
     const [flete,setFlete] = useState(true)
     const [establecimiento, setEstablecimiento] = useState(props.establecimiento)
     const [rodeo,setRodeo] = useState(props.rodeo)
+    const [endOfGuia,setEndOfGuia] = useState(true)
     const [vendorErrors, setVendorErrors] = useState({})
-    console.log(animalArray)
     for (let i=0;i<props.data.length;i++){
       if(props.data[i].nombre===establecimiento){
           rodeos=props.data[i].rodeos
@@ -100,16 +111,24 @@ export function Step2(props) {
       }
       
       const saveAnimal = function(e) {
+        
+      if (guia.cantAnimales>1){
         animalDetail.establecimientoid=establecimiento
         animalDetail.rodeoid=rodeo
         animalArray.push(animalDetail)
-        keepAnimalDetail({})
-        console.log(animalDetail)
-        console.log(animalArray)
+        setAnimalDetail(cattleInitial)
+        if (animalArray.length==guia.cantAnimales&&animalArray.length>1){
+          setEndOfGuia(false)
+          alert("Guia completa")
+        }
+      }else{
+        alert("La cantidad de animales espefificada en la guia debe ser mayor a 0. Verifique la informacioón y vuelva a intentar")
+      }
+       
       }
       
       const deleteAnimal = function(){
-        setAnimalDetail({})
+        setAnimalDetail(cattleInitial)
       }
 
     const handleFlete=function(e){
@@ -138,6 +157,7 @@ export function Step2(props) {
       const cancelFunc = function(e){
           e.preventDefault()
           props.cancelCompra()
+          setAnimalArray([])
       }
 
       const continueFunc = function(e){
@@ -172,7 +192,7 @@ export function Step2(props) {
                     </Typography>
                 </Grid>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} sm={4}>
+                    <Grid item xs={12} sm={3}>
                       <TextField
                           variant="outlined"
                           required
@@ -180,11 +200,29 @@ export function Step2(props) {
                           id="guia"
                           label="GUIA Nº:"
                           name="guia"
-                          autoComplete="off"
+                          value={guia.guia}
                           onChange={(e)=>handleGUIA(e)}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+                    <Grid item xs={12} sm={3}>
+                    <TextField
+                          autoComplete="descarga"
+                          name="fechaDescarga"
+                          variant="outlined"
+                          required
+                          fullWidth
+                          id="fechaDescarga"
+                          label="Fecha de Descarga"
+                          type="date"
+                          InputLabelProps={{
+                                              shrink: true,
+                                            }}
+                          autoFocus
+                          value={guia.fechaDescarga}
+                          onChange={(e) => handleGUIA(e)}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
                     <TextField
                         variant="outlined"
                         required
@@ -192,11 +230,11 @@ export function Step2(props) {
                         id="transportista"
                         label="Transportista:"
                         name="transportista"
-                        autoComplete="off"
+                        value={transporte.trasportista}
                         onChange={(e)=>handleTransporte(e)}
                     />
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+                    <Grid item xs={12} sm={3}>
                     <TextField
                         variant="outlined"
                         required
@@ -204,7 +242,7 @@ export function Step2(props) {
                         id="cuiTransportista"
                         label="CUIT transportista:"
                         name="cuiTransportista"
-                        autoComplete="off"
+                        value={transporte.cuiTransportista}
                         onChange={(e)=>handleTransporte(e)}
                     />
                     </Grid>
@@ -216,7 +254,7 @@ export function Step2(props) {
                         id="chasis"
                         label="Patente Chasis:"
                         name="chasis"
-                        autoComplete="off"
+                        value={transporte.chasis}
                         onChange={(e)=>handleTransporte(e)}
                     />
                     </Grid>
@@ -228,7 +266,7 @@ export function Step2(props) {
                         id="acoplado"
                         label="Patente Acoplado:"
                         name="acoplado"
-                        autoComplete="off"
+                        value={transporte.acoplado}
                         onChange={(e)=>handleTransporte(e)}
                     />
                     </Grid>
@@ -240,7 +278,7 @@ export function Step2(props) {
                         id="chofer"
                         label="Chofer:"
                         name="chofer"
-                        autoComplete="off"
+                        value={transporte.chofer}
                         onChange={(e)=>handleTransporte(e)}
                     />
                     </Grid>
@@ -252,7 +290,7 @@ export function Step2(props) {
                         id="cuil"
                         label="CUIT/CUIL chofer"
                         name="cuil"
-                        autoComplete="off"
+                        value={transporte.cuil}
                         onChange={(e)=>handleTransporte(e)}
                     />
                     </Grid>
@@ -264,7 +302,7 @@ export function Step2(props) {
                         id="pesajePlace"
                         label="Lugar de Pesada:"
                         name="pesajePlace"
-                        autoComplete="off"
+                        value={guia.pesajePlace}
                         onChange={(e)=>handleGUIA(e)}
                     />
                     </Grid>
@@ -276,7 +314,7 @@ export function Step2(props) {
                         id="ticket"
                         label="Ticket Balanza Nº:"
                         name="ticket"
-                        autoComplete="off"
+                        value={guia.ticket}
                         onChange={(e)=>handleGUIA(e)}
                     />
                     </Grid>
@@ -288,7 +326,7 @@ export function Step2(props) {
                         id="peso"
                         label="Peso Neto:"
                         name="peso"
-                        autoComplete="off"
+                        value={guia.peso}
                         onChange={(e)=>handleGUIA(e)}
                     />
                     </Grid>
@@ -297,10 +335,10 @@ export function Step2(props) {
                         variant="outlined"
                         required
                         fullWidth
-                        id="animales"
+                        id="cantAnimales"
                         label="Animales:"
-                        name="animales"
-                        autoComplete="off"
+                        name="cantAnimales"
+                        value={guia.cantAnimales}
                         onChange={(e)=>handleGUIA(e)}
                     />
                     </Grid>
@@ -323,7 +361,7 @@ export function Step2(props) {
                         label="Factura Flete. Nº:"
                         name="numFactura"
                         onChange={(e) => handleFacturaTransporte(e)}
-                        autoComplete="off"
+                        value={facturaTransporte.numFactura}
                     />:null}
                     </Grid>
                     <Grid item item xs={12} sm={3}>
@@ -331,10 +369,9 @@ export function Step2(props) {
                         variant="outlined"
                         required
                         fullWidth
-                        id="totalFlete"
                         label="Total Flete ($)"
-                        name="totalFlete"
-                        autoComplete="off"
+                        name="totalFactura"
+                        value={facturaTransporte.totalFactura}
                         onChange={(e) => handleFacturaTransporte(e)}
                     />:null}
                     </Grid>
@@ -353,7 +390,7 @@ export function Step2(props) {
                           id="cug"
                           label="CUG:"
                           name="cug"
-                          autoComplete="off"
+                          value={animalDetail.cug}
                           onChange={(e)=>handleAnimalDetail(e)}
                       />
                     </Grid>
@@ -365,7 +402,7 @@ export function Step2(props) {
                           id="manejo"
                           label="Nº de Manejo:"
                           name="manejo"
-                          autoComplete="off"
+                          value={animalDetail.manejo}
                           onChange={(e)=>handleAnimalDetail(e)}
                       />
                     </Grid>
@@ -377,7 +414,7 @@ export function Step2(props) {
                           id="verificador"
                           label="Verificador:"
                           name="verificador"
-                          autoComplete="off"
+                          value={animalDetail.verificador}
                           onChange={(e)=>handleAnimalDetail(e)}
                       />
                     </Grid>
@@ -389,7 +426,7 @@ export function Step2(props) {
                           id="raza"
                           label="Raza:"
                           name="raza"
-                          autoComplete="off"
+                          value={animalDetail.raza}
                           onChange={(e)=>handleAnimalDetail(e)}
                       />
                     </Grid>
@@ -401,7 +438,7 @@ export function Step2(props) {
                           id="sexo"
                           label="Sexo:"
                           name="sexo"
-                          autoComplete="off"
+                          value={animalDetail.sexo}
                           onChange={(e)=>handleAnimalDetail(e)}
                       />
                     </Grid>
@@ -413,7 +450,7 @@ export function Step2(props) {
                           id="frame"
                           label="Frame:"
                           name="frame"
-                          autoComplete="off"
+                          value={animalDetail.frame}
                           onChange={(e)=>handleAnimalDetail(e)}
                       />
                     </Grid>
@@ -468,9 +505,8 @@ export function Step2(props) {
                                 </FormControl>
                             </Grid>
                             <Grid item xs={12} sm={6}></Grid>
-                        <Grid item xs={12} sm={3}>
+                        {endOfGuia?<Grid item xs={12} sm={3}>
                             <Button
-                                
                                 fullWidth
                                 variant="contained"
                                 color="primary"
@@ -478,10 +514,9 @@ export function Step2(props) {
                                 onClick={(e)=>deleteAnimal(e)} >
                                Borrar Datos
                             </Button>
-                        </Grid>
-                        <Grid item xs={12} sm={3}>
+                        </Grid>:null}
+                        {endOfGuia?<Grid item xs={12} sm={3}>
                             <Button
-                                
                                 fullWidth
                                 variant="contained"
                                 color="primary"
@@ -489,16 +524,26 @@ export function Step2(props) {
                                 onClick={(e)=>saveAnimal(e)} >
                                 Agregar Animal
                             </Button>
+                    </Grid>:null}
+                    <Grid item xs={12} sm={7}></Grid>
+                    <Grid item xs={12} sm={5}>
+                    Animales registrados:{animalArray.length}/{guia.cantAnimales}
                     </Grid>
+                    <Grid item xs={12} sm={2}></Grid>
+                    {endOfGuia?null:<Grid item xs={12} sm={9}>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                color="primary"
+                                className={classes.submit}
+                                >
+                               Guardar GUIA Nº:{guia.guia}
+                            </Button>
+                        </Grid>}
 
 
                   </Grid>  
 
-
-
-
-
-              
                     <Grid container spacing={2} >
                       <Grid item xs={12} sm={3}></Grid>
                       <Grid item xs={12} sm={3}>
@@ -548,13 +593,13 @@ export function Step2(props) {
 
 const mapStateToProps = state => {		
   return {		
-    guia:state.compras.guiaN,
-    guias:state.compras.guias,
-    transporte:state.compras.transporte,
-    facturaTransporte:state.compras.facturaTransporte,
-    animalDetail:state.compras.detalleAnimal,
-    animalArray:state.compras.animales,
-    ifTransporte:state.compras.ifTransporte,
+    guiaN:state.compras.guiaN,
+    guiass:state.compras.guias,
+    transport:state.compras.transporte,
+    facturaTransport:state.compras.facturaTransporte,
+    cattleDetail:state.compras.detalleAnimal,
+    cattleArray:state.compras.animales,
+    ifTransport:state.compras.ifTransporte,
     step:state.compras.step
   }		
 }
