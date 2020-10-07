@@ -1,11 +1,13 @@
-import {CANCEL_COMPRA,SET_SECTION,KEEP_VENDOR,KEEP_CONSIG, SET_STEP,KEEP_FACTURACION,
-COMISSION_SWICH,CONSIG_SWICH} from '../actions/compras'
+import {CANCEL_COMPRA,SET_SECTION,KEEP_VENDOR,KEEP_CONSIG,KEEP_TRANSPORT,
+KEEP_GUIA,KEEP_GUIAS,KEEP_ANIMAL_DETAIL,KEEP_ANIMAL_ARRAY, SET_STEP, KEEP_FACTURA_CONSIG,KEEP_FACTURA_VENDOR,
+KEEP_FACTURA_TRANSPORT,COMISSION_SWICH,CONSIG_SWICH,TRANSPORT_SWICH} from '../actions/compras'
 const initialState = {
     section: null,
 
     step:"1",
     ifconsig:true,
     ifcomission:true,
+    iftransporte:true,
 
     vendedor:{   
       vendor_razon_social:"",
@@ -23,14 +25,56 @@ const initialState = {
       email:"",
       celular:""},
 
-      facturas:{
+      transporte:{
+        transportista: "",
+        cuiTransportista: "",
+        chasis: "",
+        acoplado: "",
+        chofer: "",
+        cuil: "",
+      },
+      facturaVendor:{
         fechaCompra:"",
         animales:"",
         facturaVendedor:"",
         totalVendedor:"",
+      },
+
+      facturaConsig:{
         facturaConsig:"",
         totalConsig:"",
-      }
+      },
+      
+      facturaTransporte:{
+        numFactura:"",
+        totalFactura:""
+      },
+
+      detalleAnimal:{
+        cug: "",
+        manejo: "",
+        verificador: "",
+        raza: "",
+        sexo: "",
+        frame: "",
+        pesoinicial:"" ,
+        pesoactual:"",
+        establecimientoid:"",
+         rodeoid:" ",
+
+      },
+
+      guiaN:{
+        guia:"",
+        pesajePlace: "",
+        ticket: "",
+        peso: "",
+        cantAnimales: "",
+        animales:[]
+      },
+
+      animales:[],
+      guias:[]
 };
 
 export default function global(state = initialState, action){
@@ -59,10 +103,52 @@ export default function global(state = initialState, action){
       consignatario:action.payload,
          }
   }
-  if (action.type === KEEP_FACTURACION){
+  if (action.type === KEEP_TRANSPORT){
     return{
       ...state,
-      facturas:action.payload,
+      transporte:action.payload,
+         }
+  }
+  if (action.type === KEEP_GUIA){
+    return{
+      ...state,
+      guiaN:action.payload,
+         }
+  }
+  if (action.type === KEEP_GUIAS){
+    return{
+      ...state,
+      guias:action.payload,
+         }
+  }
+  if (action.type === KEEP_ANIMAL_DETAIL){
+    return{
+      ...state,
+      detalleAnimal:action.payload,
+         }
+  }
+  if (action.type === KEEP_ANIMAL_ARRAY){
+    return{
+      ...state,
+      animales:action.payload,
+         }
+  }
+  if (action.type === KEEP_FACTURA_VENDOR){
+    return{
+      ...state,
+      facturaVendor:action.payload,
+         }
+  }
+  if (action.type === KEEP_FACTURA_CONSIG){
+    return{
+      ...state,
+      facturaConsig:action.payload,
+         }
+  }
+  if (action.type === KEEP_FACTURA_TRANSPORT){
+    return{
+      ...state,
+      facturaTransporte:action.payload,
          }
   }
   if (action.type === SET_STEP){
@@ -82,6 +168,12 @@ export default function global(state = initialState, action){
     return{
       ...state,
       ifconsig:action.payload,
+         }
+  }
+  if (action.type === TRANSPORT_SWICH){
+    return{
+      ...state,
+      iftransporte:action.payload,
          }
   }
   return state
