@@ -25,14 +25,7 @@ const initialState = {
       email:"",
       celular:""},
 
-      transporte:{
-        transportista: "",
-        cuiTransportista: "",
-        chasis: "",
-        acoplado: "",
-        chofer: "",
-        cuil: "",
-      },
+     
       facturaVendor:{
         fechaCompra:"",
         animales:"",
@@ -45,10 +38,7 @@ const initialState = {
         totalConsig:"",
       },
       
-      facturaTransporte:{
-        numFactura:"",
-        totalFactura:""
-      },
+     
 
       detalleAnimal:{
         cug: "",
@@ -71,6 +61,18 @@ const initialState = {
         ticket: "",
         peso: "",
         cantAnimales: 0,
+        transporte:{
+          transportista: "",
+          cuiTransportista: "",
+          chasis: "",
+          acoplado: "",
+          chofer: "",
+          cuil: "",
+        },
+        facturaTransporte:{
+          numFactura:"",
+          totalFactura:""
+        },
         animales:[]
       },
 

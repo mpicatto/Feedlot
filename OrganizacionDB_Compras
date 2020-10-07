@@ -68,8 +68,8 @@ idConsignatario:
 guiaN ={
   id:
   "guia": "1256",
-  transporte:{}
-  facturaTransporte:{}
+  transporte:{id}
+  facturaTransporte:{id}
   "pesajePlace": "Balanza Publica San Carlos",
   "ticket": "7854",
   "peso": "6500",
