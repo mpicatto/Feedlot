@@ -9,7 +9,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
-import {cancelCompra,keepConsig,keepVendor,setStep,keepFactura, comissionSwich,consigSwich} from '../../../../actions/compras'
+import {cancelCompra,keepConsig,keepVendor,setStep,
+  keepFacturaVendor,keepFacturaConsig, comissionSwich,
+consigSwich} from '../../../../actions/compras'
 import {connect} from 'react-redux';
 
 //ESTILOS DE MATERIAL UI
@@ -37,16 +39,19 @@ export function Step1(props) {
     useEffect(()=>{
       setVendedor(props.vendedor)
       setConsignatario(props.consignatario)
-      setFacturas(props.facturas)
+      setFacturaVendedor(props.facturaVendor)
+      setFacturaConsig(props.facturaConsig)
       setComission(props.ifcomission)
       setIfConsignatario(props.ifconsig)
-    },[props.vendedor, props.consignatario,props.facturas,props.ifcomission,props.ifconsig])
+    },[props.vendedor, props.consignatario,props.facturaVendor,
+      props.facturaConsig,props.ifcomission,props.ifconsig])
 
     const [vendedor, setVendedor] = useState({})
     const [consignatario, setConsignatario] = useState({})
     const [comission,setComission]=useState(true)
     const [ifConsignatario,setIfConsignatario]=useState(true)
-    const [facturas, setFacturas]=useState({})
+    const [facturaVendedor, setFacturaVendedor]=useState({})
+    const [facturaConsig, setFacturaConsig]=useState({})
     const [vendorErrors, setVendorErrors] = useState({})
     const [consigErrors, setConsigErrors] = useState({})
 
@@ -55,6 +60,7 @@ export function Step1(props) {
           ...vendedor,
           [e.target.name]:e.target.value
         })
+        console.log(vendedor)
        
         setVendorErrors(validateVendor({
           ...vendedor,
@@ -74,12 +80,19 @@ export function Step1(props) {
         }));
       }
 
-      const handleFactura = function(e) {
-        setFacturas({
-          ...facturas,
+      const handleFacturaVendedor = function(e) {
+        setFacturaVendedor({
+          ...facturaVendedor,
           [e.target.name]:e.target.value
         })
-        console.log(facturas)
+       
+      }
+      const handleFacturaConsig = function(e) {
+        setFacturaConsig({
+          ...facturaConsig,
+          [e.target.name]:e.target.value
+        })
+        
       }
 
       const handleIfConsig= function(e){
@@ -101,7 +114,8 @@ export function Step1(props) {
           e.preventDefault()
           props.keepVendor(vendedor)
           props.keepConsig(consignatario)
-          props.keepFactura(facturas)
+          props.keepFacturaVendor(facturaVendedor)
+          props.keepFacturaConsig(facturaConsig)
           props.comissionSwich(comission)
           props.consigSwich(ifConsignatario)
           props.setStep("2")
@@ -137,7 +151,7 @@ export function Step1(props) {
                         id="vendor_razon_social"
                         label="Razon Social"
                         name="vendor_razon_social"
-                        autoComplete="off"
+                        value={vendedor.vendor_razon_social}
                         onChange={(e)=>handleVendorData(e)}
                     />
                     </Grid>
@@ -149,7 +163,7 @@ export function Step1(props) {
                         id="vendor_cuit"
                         label="CUIT"
                         name="vendor_cuit"
-                        autoComplete="off"
+                        value={vendedor.vendor_cuit}
                         onChange={(e)=>handleVendorData(e)}
                     />
                     </Grid>
@@ -158,10 +172,10 @@ export function Step1(props) {
                         variant="outlined"
                         required
                         fullWidth
-                        id="vendor_adressFiscal"
+                        id="vendor_addressFiscal"
                         label="Dirección Fiscal"
-                        name="vendor_adressFiscal"
-                        autoComplete="off"
+                        name="vendor_addressFiscal"
+                        value={vendedor.vendor_addressFiscal}
                         onChange={(e)=>handleVendorData(e)}
                     />
                     </Grid>
@@ -173,7 +187,7 @@ export function Step1(props) {
                         id="vendor_cp"
                         label="Cod. Postal"
                         name="vendor_cp"
-                        autoComplete="off"
+                        value={vendedor.vendor_cp}
                         onChange={(e)=>handleVendorData(e)}
                     />
                     </Grid>
@@ -185,7 +199,7 @@ export function Step1(props) {
                         id="vendor_email"
                         label="Dirección Email"
                         name="vendor_email"
-                        autoComplete="off"
+                        value={vendedor.vendor_email}
                         onChange={(e)=>handleVendorData(e)}
                     />
                     </Grid>
@@ -197,7 +211,7 @@ export function Step1(props) {
                         id="vendor_celular"
                         label="Teléfono Celular/Whatsapp"
                         name="vendor_celular"
-                        autoComplete="off"
+                        value={vendedor.vendor_celular}
                         onChange={(e)=>handleVendorData(e)}
                     />
                     </Grid>
@@ -227,7 +241,7 @@ export function Step1(props) {
                         id="razon_social"
                         label="Razon Social"
                         name="razon_social"
-                        autoComplete="off"
+                        value={consignatario.razon_social}
                         onChange={(e)=>handleConsigData(e)}
                     />
                     </Grid>
@@ -239,7 +253,7 @@ export function Step1(props) {
                         id="cuit"
                         label="CUIT"
                         name="cuit"
-                        autoComplete="off"
+                        value={consignatario.cuit}
                         onChange={(e)=>handleConsigData(e)}
                     />
                     </Grid>
@@ -248,10 +262,10 @@ export function Step1(props) {
                         variant="outlined"
                         required
                         fullWidth
-                        id="adressFiscal"
+                        id="addressFiscal"
                         label="Dirección Fiscal"
-                        name="adressFiscal"
-                        autoComplete="off"
+                        name="addressFiscal"
+                        value={consignatario.addressFiscal}
                         onChange={(e)=>handleConsigData(e)}
                     />
                     </Grid>
@@ -263,7 +277,7 @@ export function Step1(props) {
                         id="cp"
                         label="Cod. Postal"
                         name="cp"
-                        autoComplete="off"
+                        value={consignatario.cp}
                         onChange={(e)=>handleConsigData(e)}
                     />
                     </Grid>
@@ -275,7 +289,7 @@ export function Step1(props) {
                         id="email"
                         label="Dirección Email"
                         name="email"
-                        autoComplete="off"
+                        value={consignatario.email}
                         onChange={(e)=>handleConsigData(e)}
                     />
                     </Grid>
@@ -287,7 +301,7 @@ export function Step1(props) {
                         id="celular"
                         label="Teléfono Celular/Whatsapp"
                         name="celular"
-                        autoComplete="off"
+                        value={consignatario.celular}
                         onChange={(e)=>handleConsigData(e)}
                     />
                     </Grid>
@@ -315,7 +329,8 @@ export function Step1(props) {
                                               shrink: true,
                                             }}
                           autoFocus
-                          onChange={(e) => handleFactura(e)}
+                          value={facturaVendedor.fechaCompra}
+                          onChange={(e) => handleFacturaVendedor(e)}
                         />
                     </Grid>
                     <Grid item xs={12} sm={3}>
@@ -326,8 +341,8 @@ export function Step1(props) {
                         id="animales"
                         label="Animales:"
                         name="animales"
-                        autoComplete="off"
-                        onChange={(e) => handleFactura(e)}
+                        value={facturaVendedor.animales}
+                        onChange={(e) => handleFacturaVendedor(e)}
                     />
                     </Grid>
                     <Grid item xs={12} sm={3}>
@@ -338,8 +353,8 @@ export function Step1(props) {
                         id="facturaVendedor"
                         label="Factura Compra Nº:"
                         name="facturaVendedor"
-                        autoComplete="off"
-                        onChange={(e) => handleFactura(e)}
+                        value={facturaVendedor.facturaVendedor}
+                        onChange={(e) => handleFacturaVendedor(e)}
                     />
                     </Grid>
                     <Grid item item xs={12} sm={3}>
@@ -350,8 +365,8 @@ export function Step1(props) {
                         id="totalVendedor"
                         label="Total Factura ($)"
                         name="totalVendedor"
-                        autoComplete="off"
-                        onChange={(e) => handleFactura(e)}
+                        value={facturaVendedor.totalVendedor}
+                        onChange={(e) => handleFacturaVendedor(e)}
                     />
                     </Grid>
                     
@@ -372,8 +387,8 @@ export function Step1(props) {
                         id="facturaConsig"
                         label="Factura Consig. Nº:"
                         name="facturaConsig"
-                        onChange={(e) => handleFactura(e)}
-                        autoComplete="off"
+                        onChange={(e) => handleFacturaConsig(e)}
+                        value={facturaConsig.facturaConsig}
                     />:null}
                     </Grid>
                     <Grid item item xs={12} sm={3}>
@@ -384,8 +399,8 @@ export function Step1(props) {
                         id="totalConsig"
                         label="Total Comisión ($)"
                         name="totalConsig"
-                        autoComplete="off"
-                        onChange={(e) => handleFactura(e)}
+                        value={facturaConsig.totalConsig}
+                        onChange={(e) => handleFacturaConsig(e)}
                     />:null}
                     </Grid>
 
@@ -435,7 +450,8 @@ const mapStateToProps = state => {
     vendedor:state.compras.vendedor,
     consignatario:state.compras.consignatario,
     step:state.compras.step,
-    facturas:state.compras.facturas,
+    facturaVendor:state.compras.facturaVendor,
+    facturaConsig:state.compras.facturaConsig,
     ifcomission:state.compras.ifcomission,
     ifconsig:state.compras.ifconsig
   }		
@@ -446,7 +462,8 @@ const mapDispatchToProps = dispatch => {
     cancelCompra:()=>dispatch(cancelCompra()),
     keepVendor:(vendor)=>dispatch(keepVendor(vendor)),
     keepConsig:(consig)=>dispatch(keepConsig(consig)),
-    keepFactura:(bills)=>dispatch(keepFactura(bills)),
+    keepFacturaVendor:(bills)=>dispatch(keepFacturaVendor(bills)),
+    keepFacturaConsig:(bills)=>dispatch(keepFacturaConsig(bills)),
     setStep:(number)=>dispatch(setStep(number)),
     comissionSwich:(seleccion)=>dispatch(comissionSwich(seleccion)),
     consigSwich:(seleccion)=>dispatch(consigSwich(seleccion))

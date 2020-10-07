@@ -1,0 +1,102 @@
+Usuario={
+user:id
+userData:{}
+Establecimientos[Establecimiento1, Establecimiento2,...,EstablecimientoN]
+compras:[compra1, compra2,...,compraN]
+}
+
+EstablecimientoN={
+id:
+Rodeos:[Rodeo1,Rodeo2,...,RodeoN]
+idUsuario
+}
+
+RodeoN:{
+id:
+...RodeoN,
+establecimientoid:
+}
+
+compraN={
+id:
+fechaCompra:",
+vendedor:{id}
+facturaVendedor:{id}
+consignatario:{id}
+facturaconsignatario:{id}
+guias=[guia1, guia2,..., guiaN]
+}
+
+
+vendedor:{
+  id:
+  "vendor_razon_social": "",
+  "vendor_cuit": "",
+  "vendor_addressFiscal": "",
+  "vendor_cp": "",
+  "vendor_email": "",
+  "vendor_celular": ""
+}
+
+facturaVendedor:{
+id:
+numFactura:
+total:Factura:
+idVendedor:
+}
+
+consignatario:{
+   id:
+  "razon_social": "",
+  "cuit": "",
+  "addressFiscal": "",
+  "cp": "",
+  "email": "",
+  "celular": ""
+}
+
+facturaConsignatario:{
+id:
+operacion:
+numFactura:
+total:Factura:
+idConsignatario:
+}
+
+
+
+guiaN ={
+  id:
+  "guia": "1256",
+  transporte:{}
+  facturaTransporte:{}
+  "pesajePlace": "Balanza Publica San Carlos",
+  "ticket": "7854",
+  "peso": "6500",
+  "cantAnimales": "40",
+  animales:[animal1, animal2,..., animalN]
+}
+
+transporte:{
+  id:,
+  "transportista": "Los Luceros",
+  "cuiTransportista": "30775688939",
+  "chasis": "AA54655AB",
+  "acoplado": "AA854564BB",
+  "chofer": "Juan Carlos Ortegha",
+  "cuil": "20324567893",
+}
+
+facturaTransporte:{
+id:
+numFactura:
+total:Factura:
+idtransporte:
+
+}
+
+
+animalN = { id: ,cug: "123", manejo: "A354", verificador: "8", raza: "Brangus", sexo: "M", frame: "5", peso:"" , establecimientoid:, rodeoid:" ",}
+
+
+
