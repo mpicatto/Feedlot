@@ -22,25 +22,6 @@ const filter = (props)=>{
 }
 
 
-// const useStyles = makeStyles((theme) => ({
-//     paper: {
-//       margin: theme.spacing(3),
-//       display: 'flex',
-//       flexDirection: 'column',
-//       alignItems: 'center',
-//     },
-//     formControl: {
-//         margin: theme.spacing(1),
-//         minWidth: 120,
-//       },
-//       selectEmpty: {
-//         marginTop: theme.spacing(2),
-//       },
-//     background:{
-//       color:theme.palette.background.default
-//     }
-//   }));
-
 const Details = (props) =>{
     // const classes = useStyles();
     useEffect(()=>{data=[]

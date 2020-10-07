@@ -13,6 +13,7 @@ import Switch from '@material-ui/core/Switch';
 import {cancelCompra,setStep, keepTransport,keepFacturaTransport,
 keepGuia,keepGuiaS,keepAnimalDetail,keepAnimalArray ,transportSwich} from '../../../../actions/compras'
 import {connect} from 'react-redux';
+import {guiaInicial,animalInicial,transporteInit,facturaTransportInit} from './initialState'
 
 let rodeos=[]
 
@@ -52,20 +53,20 @@ export function Step2(props) {
     }
 
     useEffect(()=>{
-      setGuia(props.guiaN)
+      // setGuia(props.guiaN)
       setGuiaS(props.guiass)
-      setTransporte(props.transport)
-      setFacturaTransporte(props.facturaTransport)
-      setAnimalDetail(props.cattleDetail)
+      // setTransporte(props.transport)
+      // setFacturaTransporte(props.facturaTransport)
+      // setAnimalDetail(props.cattleDetail)
       setAnimalArray(props.cattleArray)
       setFlete(props.ifTransport)
-    },[props.guiaN, props.guiass,props.transport,props.facturaTransport,props.cattleArray,props.ifTransport])
+    },[props.guiass,props.cattleArray,props.ifTransport])
    
-    const [guia, setGuia] = useState({})
-    const [guiaS, setGuiaS] = useState({})
-    const [transporte, setTransporte]=useState({})
-    const [facturaTransporte,setFacturaTransporte]=useState({})
-    const [animalDetail, setAnimalDetail]=useState({})
+    const [guia, setGuia] = useState(guiaInicial)
+    const [guiaS, setGuiaS] = useState([])
+    const [transporte, setTransporte]=useState(transporteInit)
+    const [facturaTransporte,setFacturaTransporte]=useState(facturaTransportInit)
+    const [animalDetail, setAnimalDetail]=useState(animalInicial)
     const [animalArray, setAnimalArray] = useState([])
     const [flete,setFlete] = useState(true)
     const [establecimiento, setEstablecimiento] = useState(props.establecimiento)
@@ -78,12 +79,13 @@ export function Step2(props) {
       }
   }
 
+  console.log(transporte.transportista)
+
     const handleGUIA = function(e) {
         setGuia({
           ...guia,
           [e.target.name]:e.target.value
         })
-        console.log(guia)
       }
     
       const handleTransporte = function(e) {
@@ -111,67 +113,80 @@ export function Step2(props) {
       }
       
       const saveAnimal = function(e) {
-        
-      if (guia.cantAnimales>1){
-        animalDetail.establecimientoid=establecimiento
-        animalDetail.rodeoid=rodeo
-        animalArray.push(animalDetail)
-        setAnimalDetail(cattleInitial)
-        if (animalArray.length==guia.cantAnimales&&animalArray.length>1){
-          setEndOfGuia(false)
-          alert("Guia completa")
-        }
-      }else{
-        alert("La cantidad de animales espefificada en la guia debe ser mayor a 0. Verifique la informacioón y vuelva a intentar")
-      }
-       
+          if (guia.cantAnimales>1){
+            animalDetail.establecimientoid=establecimiento
+            animalDetail.rodeoid=rodeo
+            animalArray.push(animalDetail)
+            console.log(animalArray.length)
+            console.log(animalArray)
+            alert("Se Agrego Animal "+animalDetail.cug+animalDetail.manejo+animalDetail.verificador+". \nAnimal "+animalArray.length+"/"+guia.cantAnimales+".")
+            setAnimalDetail(animalInicial)
+            if (animalArray.length==guia.cantAnimales&&animalArray.length>1){
+
+            }
+          }else{
+            alert("La cantidad de animales espefificada en la guia debe ser mayor a 0. Verifique la informacioón y vuelva a intentar")
+          }
       }
       
       const deleteAnimal = function(){
         setAnimalDetail(cattleInitial)
       }
 
-    const handleFlete=function(e){
-      setFlete(!e.target.checked)
-    } 
-    
-    const handleEstablecimiento = (event) => {
-      setEstablecimiento(event.target.value);
-      setRodeo("Elija una opción...")
-      for (let i=0;i<props.data.length;i++){
-        if(props.data[i].nombre===establecimiento){
-            rodeos=props.data[i].rodeos
-        }
-    }
-  };
+      const saveGuia = function(){
+        guia.animales=animalArray
+        guia.transporte=transporte
+        guia.facturaTransporte=facturaTransporte
+        guiaS.push(guia)
+        setGuia(guiaInicial)
+        setTransporte(transporteInit)
+        setFacturaTransporte(facturaTransportInit)
+        setAnimalArray([])
+        setFlete(true)
+        setEndOfGuia(true)
+      }
 
-  const handleRodeo = (event) => {
-    setRodeo(event.target.value);
-  };
+      const handleFlete=function(e){
+        setFlete(!e.target.checked)
+      } 
+      
+      const handleEstablecimiento = (event) => {
+        setEstablecimiento(event.target.value);
+        setRodeo("Elija una opción...")
+        for (let i=0;i<props.data.length;i++){
+          if(props.data[i].nombre===establecimiento){
+              rodeos=props.data[i].rodeos
+          }
+      }
+    };
 
-      const volverFunc = function(e){
+    const handleRodeo = (event) => {
+      setRodeo(event.target.value);
+    };
+
+    const volverFunc = function(e){
+      e.preventDefault()
+      props.setStep("1")
+  }
+
+    const cancelFunc = function(e){
         e.preventDefault()
-        props.setStep("1")
+        props.cancelCompra()
+        setAnimalArray([])
     }
 
-      const cancelFunc = function(e){
-          e.preventDefault()
-          props.cancelCompra()
-          setAnimalArray([])
-      }
-
-      const continueFunc = function(e){
-          e.preventDefault()
-          props.keepTransport(transporte)
-          props.keepFacturaTransport(facturaTransporte)
-          props.keepGuia(guia)
-          props.keepGuiaS(guiaS)
-          props.keepAnimalDetail(animalDetail)
-          props.keepAnimalArray(animalArray)
-          props.transportSwich(flete)
-          setStep("2")
-          
-      }
+    const continueFunc = function(e){
+        e.preventDefault()
+        props.keepTransport(transporte)
+        props.keepFacturaTransport(facturaTransporte)
+        props.keepGuia(guia)
+        props.keepGuiaS(guiaS)
+        props.keepAnimalDetail(animalDetail)
+        props.keepAnimalArray(animalArray)
+        props.transportSwich(flete)
+        setStep("2")
+        
+    }
  
     return (
 
@@ -230,7 +245,7 @@ export function Step2(props) {
                         id="transportista"
                         label="Transportista:"
                         name="transportista"
-                        value={transporte.trasportista}
+                        value={transporte.transportista}
                         onChange={(e)=>handleTransporte(e)}
                     />
                     </Grid>
@@ -526,17 +541,17 @@ export function Step2(props) {
                             </Button>
                     </Grid>:null}
                     <Grid item xs={12} sm={7}></Grid>
-                    <Grid item xs={12} sm={5}>
+                    {endOfGuia?null:<Grid item xs={12} sm={5}>
                     Animales registrados:{animalArray.length}/{guia.cantAnimales}
-                    </Grid>
-                    <Grid item xs={12} sm={2}></Grid>
-                    {endOfGuia?null:<Grid item xs={12} sm={9}>
+                    </Grid>}
+                    <Grid item xs={12} sm={6}></Grid>
+                    {endOfGuia?null:<Grid item xs={12} sm={6}>
                             <Button
                                 fullWidth
                                 variant="contained"
                                 color="primary"
                                 className={classes.submit}
-                                >
+                                onClick={(e)=>saveGuia(e)} >
                                Guardar GUIA Nº:{guia.guia}
                             </Button>
                         </Grid>}
