@@ -7,7 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import {Select, FormControl,MenuItem} from '@material-ui/core'
+import {Select, FormControl,MenuItem, IconButton} from '@material-ui/core'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import {cancelCompra,setStep,keepGuiaS,} from '../../../../actions/compras'
@@ -23,57 +23,32 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 //------------------------------MaterialUI Imports-------------------------------------------------------------------
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+
 
 let rodeos=[]
 //------------------------------Table Functions-------------------------------------------------------------------
 let rows=[]
 
-const columns = [
-  { id: 'index', label: 'Index', minWidth: 50 },
-  { id: 'caravana', label: 'Caravana', minWidth: 100 },
-  { id: 'raza', label: 'Raza', minWidth: 50,align: 'right' },
-  {
-    id: 'sexo',label: 'Sexo',minWidth: 50,align: 'right'
-  },
-  {
-    id: 'frame',label: 'Frame',minWidth: 50, align: 'right',
-  },
-  {
-    id: 'peso',label: 'Peso Estimado (KG)',minWidth: 100, align: 'right',
-  },
-  {
-    id: 'editar',label: 'Editar',minWidth: 50, align: 'right',
-  },
-  {
-    id: 'eliminar',label: 'Eliminar',minWidth: 50, align: 'right',
-  },
 
+const columns = [
+  {id: 'index', label: 'Index', minWidth: 50 },
+  {id: 'caravana', label: 'Caravana', minWidth: 100 },
+  {id: 'raza', label: 'Raza', minWidth: 50,align: 'right'},
+  {id: 'sexo',label: 'Sexo',minWidth: 50,align: 'right'},
+  {id: 'frame',label: 'Frame',minWidth: 50, align: 'right',},
+  {id: 'establecimientoId',label: 'Establecimiento',minWidth: 100, align: 'right',},
+  {id: 'rodeoId',label: 'Rodeo',minWidth: 75, align: 'right',},
+  {id: 'editar',label: 'Editar',minWidth: 50, align: 'right',},
+  {id: 'eliminar',label: 'Eliminar',minWidth: 50, align: 'right', },
 ];
 
-function createData(index,caravana, raza, sexo,frame, peso, editar ,eliminar) {
-  return {index, caravana, raza, sexo,frame, peso, editar,eliminar};
+function createData(index,caravana, raza, sexo,frame,establecimientoId,rodeoId, editar ,eliminar) {
+  return {index, caravana, raza, sexo,frame,establecimientoId,rodeoId, editar,eliminar};
 }
 
-function populate(data){
-  rows=[]
-  data.map(item=>{
-    if(rows.includes(item)===false){
-      rows.unshift(
-        createData(
-        data.indexOf(item),
-        item.caravana,
-        item.raza,
-        item.sexo,
-        item.frame,
-        item.pesoInicial,
-        "editar",
-        "eliminar"
-        ))
-    }
-    
-  })
-  console.log(rows)
-  }
+
 
 //------------------------------Table Functions-------------------------------------------------------------------
 
@@ -104,13 +79,9 @@ const useStyles = makeStyles((theme) => ({
 
 export function Step2(props) {
     const classes = useStyles()
-  
-
     useEffect(()=>{
       setGuiaS(props.guiass)
-      
     },[props.guiass,])
-   
     const [guia, setGuia] = useState(guiaInicial)
     const [guiaS, setGuiaS] = useState([])
     const [transporte, setTransporte]=useState(transporteInit)
@@ -119,6 +90,7 @@ export function Step2(props) {
     const [animalArray, setAnimalArray] = useState(arrayInit)
     const [flete,setFlete] = useState(true)
     const [ifTable, setIfTable]=useState(false)
+    const [editMode,setEditMode]=useState(false)
     const [establecimiento, setEstablecimiento] = useState(props.establecimiento)
     const [rodeo,setRodeo] = useState(props.rodeo)
     const [endOfGuia,setEndOfGuia] = useState(true)
@@ -131,14 +103,77 @@ export function Step2(props) {
 //-------------function to add data to table
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  
+    // const editIcon = (<IconButton onClick={(e,row)=>handleEdit(e,row)}>
+    //                   <EditIcon color="secundary" />
+    //                   </IconButton>)
+
+
     const handleChangePage = (event, newPage) => {
       setPage(newPage);
     };
-  
+
     const handleChangeRowsPerPage = (event) => {
       setRowsPerPage(+event.target.value);
       setPage(0);
     };
+
+    const handleEdit = (index) =>{
+      setAnimalDetail({
+        cug:animalArray[index].cug,
+        manejo:animalArray[index].manejo,
+        verificador:animalArray[index].verificador,
+        caravana:animalArray[index].caravana,
+        raza:animalArray[index].raza,
+        sexo: animalArray[index].sexo,
+        frame: animalArray[index].frame,
+        pesoInicial:animalArray[index].pesoInicial ,
+        pesoActual:animalArray[index].pesoActual,
+        establecimientoId:animalArray[index].establecimientoId,
+        rodeoId:animalArray[index].rodeoId,
+        fechaIngreso:animalArray[index].fechaIngreso,
+        fechaEgreso:animalArray[index].fechaEgreso,
+        estado:animalArray[index].estado,
+        costoCompra:animalArray[index].costoCompra,
+      })
+    animalArray.splice(index,1)  
+    }
+    const handleDelete = (index) =>{ 
+      animalArray.splice(index,1)
+      alert("Se eliminara de la lista la caravana en la posición "+index)
+      setIfTable(false)
+      if(animalArray.length>0){
+        setIfTable(true)
+        populate(animalArray) 
+      }
+    }
+
+    function populate(data,editIcon){
+      rows=[]
+      data.map(item=>{
+        if(rows.includes(item)===false){
+          rows.unshift(
+            createData(
+            data.indexOf(item),
+            item.caravana,
+            item.raza,
+            item.sexo,
+            item.frame,
+            item.establecimientoId,
+            item.rodeoId,
+            <IconButton onClick={()=>handleEdit(data.indexOf(item))}>
+              <EditIcon color="secundary" />
+            </IconButton>,
+            <IconButton onClick={()=>handleDelete(data.indexOf(item))}>
+              <DeleteIcon color="secundary" />
+            </IconButton>
+          
+            ))
+          }  
+        })
+      }
+
+    
 //-------------------------------------------------  
 
 
@@ -148,7 +183,7 @@ export function Step2(props) {
           [e.target.name]:e.target.value
         })
       }
-    
+
       const handleTransporte = function(e) {
         setTransporte({
           ...transporte,
