@@ -31,9 +31,6 @@ export function cancelCompra(){
     return{type: KEEP_CONSIG, payload:consig}
   }
 
-  export function keepTransport(transport){
-    return{type: KEEP_TRANSPORT, payload:transport}
-  }
 
   export function keepGuia(guia){
     return{type: KEEP_GUIA, payload:guia}
@@ -59,10 +56,6 @@ export function cancelCompra(){
     return{type: KEEP_FACTURA_CONSIG, payload:facturaConsig}
   }
 
-  export function keepFacturaTransport(facturaTransport){
-    return{type: KEEP_FACTURA_TRANSPORT, payload:facturaTransport}
-  }
-
   export function setStep(number){
     return{type:SET_STEP, payload:number}
   }
@@ -75,6 +68,4 @@ export function cancelCompra(){
     return{type:COMISSION_SWICH, payload:seleccion}
   }
 
-  export function transportSwich(seleccion){
-    return{type:TRANSPORT_SWICH, payload:seleccion}
-  }
+

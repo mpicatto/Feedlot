@@ -1,14 +1,20 @@
 export const animalInicial = {
-    cug: "",
-    manejo: "",
-    verificador: "",
+    cug:"",
+    manejo:"",
+    verificador:"",
+    caravana:"",
     raza: "",
     sexo: "",
     frame: "",
-    pesoinicial:"" ,
-    pesoactual:"",
-    establecimientoid:"",
-    rodeoid:" ",
+    pesoInicial:"" ,
+    pesoActual:"",
+    establecimientoId:"",
+    rodeoId:" ",
+    fechaIngreso:"",
+    fechaEgreso:"",
+    estado:"",
+    costoCompra:"",
+
 }
 
 export const guiaInicial ={
@@ -35,3 +41,5 @@ export const facturaTransportInit = {
         totalFactura:""
       },
 }
+
+export const arrayInit = []
