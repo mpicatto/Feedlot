@@ -1,13 +1,13 @@
-import {CANCEL_COMPRA,SET_SECTION,KEEP_VENDOR,KEEP_CONSIG,KEEP_TRANSPORT,
-KEEP_GUIA,KEEP_GUIAS,KEEP_ANIMAL_DETAIL,KEEP_ANIMAL_ARRAY, SET_STEP, KEEP_FACTURA_CONSIG,KEEP_FACTURA_VENDOR,
-KEEP_FACTURA_TRANSPORT,COMISSION_SWICH,CONSIG_SWICH,TRANSPORT_SWICH} from '../actions/compras'
+import {CANCEL_COMPRA,SET_SECTION,KEEP_VENDOR,KEEP_CONSIG,
+KEEP_GUIA,KEEP_GUIAS,KEEP_ANIMAL_DETAIL,KEEP_ANIMAL_ARRAY,
+ SET_STEP, KEEP_FACTURA_CONSIG,KEEP_FACTURA_VENDOR,
+COMISSION_SWICH,CONSIG_SWICH} from '../actions/compras'
 const initialState = {
     section: null,
 
     step:"1",
     ifconsig:true,
     ifcomission:true,
-    iftransporte:true,
 
     vendedor:{   
       vendor_razon_social:"",
@@ -41,9 +41,7 @@ const initialState = {
      
 
       detalleAnimal:{
-        cug: "",
-        manejo: "",
-        verificador: "",
+        caravana:"",
         raza: "",
         sexo: "",
         frame: "",
@@ -51,7 +49,9 @@ const initialState = {
         pesoactual:"",
         establecimientoid:"",
         rodeoid:" ",
-
+        fechaIngreso:"",
+        fechaEgreso:"",
+        estado:"",
       },
 
       guiaN:{
@@ -106,12 +106,7 @@ export default function global(state = initialState, action){
       consignatario:action.payload,
          }
   }
-  if (action.type === KEEP_TRANSPORT){
-    return{
-      ...state,
-      transporte:action.payload,
-         }
-  }
+
   if (action.type === KEEP_GUIA){
     return{
       ...state,
@@ -148,12 +143,7 @@ export default function global(state = initialState, action){
       facturaConsig:action.payload,
          }
   }
-  if (action.type === KEEP_FACTURA_TRANSPORT){
-    return{
-      ...state,
-      facturaTransporte:action.payload,
-         }
-  }
+
   if (action.type === SET_STEP){
     return{
       ...state,
@@ -173,11 +163,6 @@ export default function global(state = initialState, action){
       ifconsig:action.payload,
          }
   }
-  if (action.type === TRANSPORT_SWICH){
-    return{
-      ...state,
-      iftransporte:action.payload,
-         }
-  }
+
   return state
 }  

@@ -7,16 +7,50 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import {Select, FormControl,MenuItem} from '@material-ui/core'
+import {Select, FormControl,MenuItem, IconButton} from '@material-ui/core'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
-import {cancelCompra,setStep, keepTransport,keepFacturaTransport,
-keepGuia,keepGuiaS,keepAnimalDetail,keepAnimalArray ,transportSwich} from '../../../../actions/compras'
+import {cancelCompra,setStep,keepGuiaS,} from '../../../../actions/compras'
 import {connect} from 'react-redux';
-import {guiaInicial,animalInicial,transporteInit,facturaTransportInit} from './initialState'
+import {guiaInicial,animalInicial,arrayInit,transporteInit,facturaTransportInit} from './initialState'
+//------------------------------MaterialUI Imports-------------------------------------------------------------------
+import Paper from '@material-ui/core/Paper';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TablePagination from '@material-ui/core/TablePagination';
+import TableRow from '@material-ui/core/TableRow';
+//------------------------------MaterialUI Imports-------------------------------------------------------------------
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+
 
 let rodeos=[]
+//------------------------------Table Functions-------------------------------------------------------------------
+let rows=[]
 
+
+const columns = [
+  {id: 'index', label: 'Index', minWidth: 50 },
+  {id: 'caravana', label: 'Caravana', minWidth: 100 },
+  {id: 'raza', label: 'Raza', minWidth: 50,align: 'right'},
+  {id: 'sexo',label: 'Sexo',minWidth: 50,align: 'right'},
+  {id: 'frame',label: 'Frame',minWidth: 50, align: 'right',},
+  {id: 'establecimientoId',label: 'Establecimiento',minWidth: 100, align: 'right',},
+  {id: 'rodeoId',label: 'Rodeo',minWidth: 75, align: 'right',},
+  {id: 'editar',label: 'Editar',minWidth: 50, align: 'right',},
+  {id: 'eliminar',label: 'Eliminar',minWidth: 50, align: 'right', },
+];
+
+function createData(index,caravana, raza, sexo,frame,establecimientoId,rodeoId, editar ,eliminar) {
+  return {index, caravana, raza, sexo,frame,establecimientoId,rodeoId, editar,eliminar};
+}
+
+
+
+//------------------------------Table Functions-------------------------------------------------------------------
 
 //ESTILOS DE MATERIAL UI
 const useStyles = makeStyles((theme) => ({
@@ -31,6 +65,12 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: "100%",
         minWidth:"100%"
       },
+      root: {
+        width: '100%',
+      },
+      tableContainer: {
+        maxHeight: 440,
+      }, 
 
     background:{
       color:theme.palette.background.default
@@ -39,36 +79,18 @@ const useStyles = makeStyles((theme) => ({
 
 export function Step2(props) {
     const classes = useStyles()
-    let cattleInitial ={
-      cug: "",
-      manejo: "",
-      verificador: "",
-      raza: "",
-      sexo: "",
-      frame: "",
-      pesoinicial:"" ,
-      pesoactual:"",
-      establecimientoid:"",
-      rodeoid:" ",
-    }
-
     useEffect(()=>{
-      // setGuia(props.guiaN)
       setGuiaS(props.guiass)
-      // setTransporte(props.transport)
-      // setFacturaTransporte(props.facturaTransport)
-      // setAnimalDetail(props.cattleDetail)
-      setAnimalArray(props.cattleArray)
-      setFlete(props.ifTransport)
-    },[props.guiass,props.cattleArray,props.ifTransport])
-   
+    },[props.guiass,])
     const [guia, setGuia] = useState(guiaInicial)
     const [guiaS, setGuiaS] = useState([])
     const [transporte, setTransporte]=useState(transporteInit)
     const [facturaTransporte,setFacturaTransporte]=useState(facturaTransportInit)
     const [animalDetail, setAnimalDetail]=useState(animalInicial)
-    const [animalArray, setAnimalArray] = useState([])
+    const [animalArray, setAnimalArray] = useState(arrayInit)
     const [flete,setFlete] = useState(true)
+    const [ifTable, setIfTable]=useState(false)
+    const [editMode,setEditMode]=useState(false)
     const [establecimiento, setEstablecimiento] = useState(props.establecimiento)
     const [rodeo,setRodeo] = useState(props.rodeo)
     const [endOfGuia,setEndOfGuia] = useState(true)
@@ -78,8 +100,82 @@ export function Step2(props) {
           rodeos=props.data[i].rodeos
       }
   }
+//-------------function to add data to table
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  
+    // const editIcon = (<IconButton onClick={(e,row)=>handleEdit(e,row)}>
+    //                   <EditIcon color="secundary" />
+    //                   </IconButton>)
 
-  console.log(transporte.transportista)
+
+    const handleChangePage = (event, newPage) => {
+      setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+      setRowsPerPage(+event.target.value);
+      setPage(0);
+    };
+
+    const handleEdit = (index) =>{
+      setAnimalDetail({
+        cug:animalArray[index].cug,
+        manejo:animalArray[index].manejo,
+        verificador:animalArray[index].verificador,
+        caravana:animalArray[index].caravana,
+        raza:animalArray[index].raza,
+        sexo: animalArray[index].sexo,
+        frame: animalArray[index].frame,
+        pesoInicial:animalArray[index].pesoInicial ,
+        pesoActual:animalArray[index].pesoActual,
+        establecimientoId:animalArray[index].establecimientoId,
+        rodeoId:animalArray[index].rodeoId,
+        fechaIngreso:animalArray[index].fechaIngreso,
+        fechaEgreso:animalArray[index].fechaEgreso,
+        estado:animalArray[index].estado,
+        costoCompra:animalArray[index].costoCompra,
+      })
+    animalArray.splice(index,1)  
+    }
+    const handleDelete = (index) =>{ 
+      animalArray.splice(index,1)
+      alert("Se eliminara de la lista la caravana en la posición "+index)
+      setIfTable(false)
+      if(animalArray.length>0){
+        setIfTable(true)
+        populate(animalArray) 
+      }
+    }
+
+    function populate(data,editIcon){
+      rows=[]
+      data.map(item=>{
+        if(rows.includes(item)===false){
+          rows.unshift(
+            createData(
+            data.indexOf(item),
+            item.caravana,
+            item.raza,
+            item.sexo,
+            item.frame,
+            item.establecimientoId,
+            item.rodeoId,
+            <IconButton onClick={()=>handleEdit(data.indexOf(item))}>
+              <EditIcon color="secundary" />
+            </IconButton>,
+            <IconButton onClick={()=>handleDelete(data.indexOf(item))}>
+              <DeleteIcon color="secundary" />
+            </IconButton>
+          
+            ))
+          }  
+        })
+      }
+
+    
+//-------------------------------------------------  
+
 
     const handleGUIA = function(e) {
         setGuia({
@@ -87,13 +183,13 @@ export function Step2(props) {
           [e.target.name]:e.target.value
         })
       }
-    
+
       const handleTransporte = function(e) {
         setTransporte({
           ...transporte,
           [e.target.name]:e.target.value
         })
-        console.log(transporte)
+
       }
       
       const handleFacturaTransporte = function(e) {
@@ -101,7 +197,7 @@ export function Step2(props) {
           ...facturaTransporte,
           [e.target.name]:e.target.value
         })
-        console.log(facturaTransporte)
+ 
       } 
       
       const handleAnimalDetail = function(e) {
@@ -109,20 +205,25 @@ export function Step2(props) {
           ...animalDetail,
           [e.target.name]:e.target.value
         })
-        console.log(animalDetail)
+
       }
       
       const saveAnimal = function(e) {
-          if (guia.cantAnimales>1){
-            animalDetail.establecimientoid=establecimiento
-            animalDetail.rodeoid=rodeo
-            animalArray.push(animalDetail)
-            console.log(animalArray.length)
+          if (guia.cantAnimales>0){
             console.log(animalArray)
-            alert("Se Agrego Animal "+animalDetail.cug+animalDetail.manejo+animalDetail.verificador+". \nAnimal "+animalArray.length+"/"+guia.cantAnimales+".")
+            animalDetail.establecimientoId=establecimiento
+            animalDetail.rodeoId=rodeo
+            animalDetail.estado="Engorde"
+            animalDetail.fechaIngreso=guia.fechaDescarga
+            animalDetail.pesoInicial=parseFloat(guia.peso)/parseInt(guia.cantAnimales)
+            animalDetail.costoCompra=(parseFloat(props.facturaVendor.totalVendedor)/parseInt(props.facturaVendor.animales))+(parseFloat(props.facturaConsig.totalConsig)/parseInt(props.facturaVendor.animales))+(parseFloat(facturaTransporte.totalFactura)/parseInt(guia.cantAnimales))
+            animalDetail.caravana=animalDetail.cug+"-"+animalDetail.manejo+"-"+animalDetail.verificador
+            animalArray.push(animalDetail)
+            populate(animalArray)
             setAnimalDetail(animalInicial)
+            setIfTable(true)
             if (animalArray.length==guia.cantAnimales&&animalArray.length>1){
-
+              setEndOfGuia(false)
             }
           }else{
             alert("La cantidad de animales espefificada en la guia debe ser mayor a 0. Verifique la informacioón y vuelva a intentar")
@@ -130,7 +231,7 @@ export function Step2(props) {
       }
       
       const deleteAnimal = function(){
-        setAnimalDetail(cattleInitial)
+        setAnimalDetail(animalInicial)
       }
 
       const saveGuia = function(){
@@ -141,13 +242,18 @@ export function Step2(props) {
         setGuia(guiaInicial)
         setTransporte(transporteInit)
         setFacturaTransporte(facturaTransportInit)
-        setAnimalArray([])
+        while (animalArray.length>0){
+          animalArray.pop()
+        }
+        console.log(animalArray)
         setFlete(true)
         setEndOfGuia(true)
+        setIfTable(false)
       }
 
       const handleFlete=function(e){
         setFlete(!e.target.checked)
+        console.log(e.target.checked)
       } 
       
       const handleEstablecimiento = (event) => {
@@ -177,18 +283,11 @@ export function Step2(props) {
 
     const continueFunc = function(e){
         e.preventDefault()
-        props.keepTransport(transporte)
-        props.keepFacturaTransport(facturaTransporte)
-        props.keepGuia(guia)
         props.keepGuiaS(guiaS)
-        props.keepAnimalDetail(animalDetail)
-        props.keepAnimalArray(animalArray)
-        props.transportSwich(flete)
         setStep("2")
         
     }
- 
-    return (
+ return (
 
         <React.Fragment>
           <CssBaseline />
@@ -359,16 +458,10 @@ export function Step2(props) {
                     </Grid>
 
                     <Grid item item xs={12} sm={6}>
-                    <FormControlLabel
-                        control={<Switch color="primary" />}
-                        label="Flete cargo del comprador"
-                        value="on"
-                        checked={!flete}
-                        onChange={(e)=>handleFlete(e)}
-                        />
+              
                     </Grid>
                     <Grid item item xs={12} sm={3}>
-                    {!flete ? <TextField
+                    <TextField
                         variant="outlined"
                         required
                         fullWidth
@@ -377,18 +470,19 @@ export function Step2(props) {
                         name="numFactura"
                         onChange={(e) => handleFacturaTransporte(e)}
                         value={facturaTransporte.numFactura}
-                    />:null}
+                    />
                     </Grid>
                     <Grid item item xs={12} sm={3}>
-                   {!flete? <TextField
+                      <TextField
                         variant="outlined"
                         required
                         fullWidth
+                        id="totalFactura"
                         label="Total Flete ($)"
                         name="totalFactura"
                         value={facturaTransporte.totalFactura}
                         onChange={(e) => handleFacturaTransporte(e)}
-                    />:null}
+                    />
                     </Grid>
                 </Grid>
                 <Grid className={classes.container}> 
@@ -495,8 +589,6 @@ export function Step2(props) {
                                         {props.data.map(item =>{
                                             return <MenuItem value={item.nombre}>{item.nombre}</MenuItem>
                                         })}
-                            
-                                  
                                     </Select>
                                 </FormControl>
                     </Grid>
@@ -540,10 +632,59 @@ export function Step2(props) {
                                 Agregar Animal
                             </Button>
                     </Grid>:null}
+{/* //-------------------------MaterialUI-Table---------------------------------------------------------------------- */}
+
+                    {ifTable?    <Paper className={classes.root}>
+      <TableContainer className={classes.tableContainer}>
+        <Table stickyHeader aria-label="sticky table">
+          <TableHead>
+            <TableRow>
+              {columns.map((column) => (
+                <TableCell
+                  key={column.id}
+                  align={column.align}
+                  style={{ minWidth: column.minWidth }}
+                >
+                  {column.label}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+              return (
+                <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                  {columns.map((column) => {
+                    const value = row[column.id];
+                    return (
+                      <TableCell key={column.id} align={column.align}>
+                        {column.format && typeof value === 'number' ? column.format(value) : value}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[10, 25, 100]}
+        component="div"
+        count={rows.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onChangePage={handleChangePage}
+        onChangeRowsPerPage={handleChangeRowsPerPage}
+      />
+    </Paper>:null}
+
+{/* //-------------------------MaterialUI-Table---------------------------------------------------------------------- */}
                     <Grid item xs={12} sm={7}></Grid>
                     {endOfGuia?null:<Grid item xs={12} sm={5}>
                     Animales registrados:{animalArray.length}/{guia.cantAnimales}
                     </Grid>}
+
                     <Grid item xs={12} sm={6}></Grid>
                     {endOfGuia?null:<Grid item xs={12} sm={6}>
                             <Button
@@ -608,14 +749,16 @@ export function Step2(props) {
 
 const mapStateToProps = state => {		
   return {		
-    guiaN:state.compras.guiaN,
+    // guiaN:state.compras.guiaN,
     guiass:state.compras.guias,
-    transport:state.compras.transporte,
-    facturaTransport:state.compras.facturaTransporte,
-    cattleDetail:state.compras.detalleAnimal,
-    cattleArray:state.compras.animales,
-    ifTransport:state.compras.ifTransporte,
-    step:state.compras.step
+    // transport:state.compras.transporte,
+    // facturaTransport:state.compras.facturaTransporte,
+    // cattleDetail:state.compras.detalleAnimal,
+    // cattleArray:state.compras.animales,
+    // ifTransport:state.compras.ifTransporte,
+    // step:state.compras.step,
+    facturaVendor:state.compras.facturaVendor,
+    facturaConsig:state.compras.facturaConsig
   }		
 }
 
@@ -623,13 +766,13 @@ const mapDispatchToProps = dispatch => {
   return {
     cancelCompra:()=>dispatch(cancelCompra()),
     setStep:(number)=>dispatch(setStep(number)),
-    keepTransport:(transport)=>dispatch(keepTransport(transport)),
-    keepFacturaTransport:(transportBill)=>dispatch(keepFacturaTransport(transportBill)),
-    keepGuia:(guiaN)=>dispatch(keepGuia(guiaN)),
+    // keepTransport:(transport)=>dispatch(keepTransport(transport)),
+    // keepFacturaTransport:(transportBill)=>dispatch(keepFacturaTransport(transportBill)),
+    // keepGuia:(guiaN)=>dispatch(keepGuia(guiaN)),
     keepGuiaS:(guiaSS)=>dispatch(keepGuiaS(guiaSS)),
-    keepAnimalDetail:(cattle)=>dispatch(keepAnimalDetail(cattle)),
-    keepAnimalArray:(cattleObj)=>dispatch(keepAnimalArray(cattleObj)),
-    transportSwich:(selection)=>dispatch(transportSwich(selection)),
+    // keepAnimalDetail:(cattle)=>dispatch(keepAnimalDetail(cattle)),
+    // keepAnimalArray:(cattleObj)=>dispatch(keepAnimalArray(cattleObj)),
+    // transportSwich:(selection)=>dispatch(transportSwich(selection)),
   }
 }
     
