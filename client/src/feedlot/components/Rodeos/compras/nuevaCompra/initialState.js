@@ -1,4 +1,5 @@
 export const animalInicial = {
+    guia:"",
     cug:"",
     manejo:"",
     verificador:"",
@@ -36,10 +37,8 @@ export const transporteInit ={
 }
 
 export const facturaTransportInit = {
-    facturaTransporte:{
         numFactura:"",
         totalFactura:""
-      },
 }
 
 export const arrayInit = []
