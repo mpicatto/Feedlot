@@ -8,12 +8,12 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import {Select, FormControl,MenuItem, IconButton} from '@material-ui/core'
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import {cancelCompra,setStep,keepGuiaS,} from '../../../../actions/compras'
+// import FormControlLabel from '@material-ui/core/FormControlLabel';
+// import Switch from '@material-ui/core/Switch';
+import {cancelCompra,setStep,keepGuiaS,setSection} from '../../../../actions/compras'
 import {connect} from 'react-redux';
 import {guiaInicial,animalInicial,arrayInit,transporteInit,facturaTransportInit} from './initialState'
-//------------------------------MaterialUI Imports-------------------------------------------------------------------
+//------------------------------MaterialUI Table Imports-------------------------------------------------------------------
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -22,15 +22,17 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-//------------------------------MaterialUI Imports-------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import TablaGuias from './guiasTable'
 
 
 let rodeos=[]
+let guiaControl=[]
+let statusCompra=[]
 //------------------------------Table Functions-------------------------------------------------------------------
 let rows=[]
-
 
 const columns = [
   {id: 'index', label: 'Index', minWidth: 50 },
@@ -47,7 +49,6 @@ const columns = [
 function createData(index,caravana, raza, sexo,frame,establecimientoId,rodeoId, editar ,eliminar) {
   return {index, caravana, raza, sexo,frame,establecimientoId,rodeoId, editar,eliminar};
 }
-
 
 
 //------------------------------Table Functions-------------------------------------------------------------------
@@ -88,9 +89,8 @@ export function Step2(props) {
     const [facturaTransporte,setFacturaTransporte]=useState(facturaTransportInit)
     const [animalDetail, setAnimalDetail]=useState(animalInicial)
     const [animalArray, setAnimalArray] = useState(arrayInit)
-    const [flete,setFlete] = useState(true)
     const [ifTable, setIfTable]=useState(false)
-    const [editMode,setEditMode]=useState(false)
+    const [ifTable2, setIfTable2]=useState(false)
     const [establecimiento, setEstablecimiento] = useState(props.establecimiento)
     const [rodeo,setRodeo] = useState(props.rodeo)
     const [endOfGuia,setEndOfGuia] = useState(true)
@@ -100,15 +100,10 @@ export function Step2(props) {
           rodeos=props.data[i].rodeos
       }
   }
-//-------------function to add data to table
+//-------------function to add data to table-----------------------------------
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
   
-    // const editIcon = (<IconButton onClick={(e,row)=>handleEdit(e,row)}>
-    //                   <EditIcon color="secundary" />
-    //                   </IconButton>)
-
-
     const handleChangePage = (event, newPage) => {
       setPage(newPage);
     };
@@ -138,18 +133,21 @@ export function Step2(props) {
       })
     animalArray.splice(index,1)  
     }
+
     const handleDelete = (index) =>{ 
-      animalArray.splice(index,1)
       alert("Se eliminara de la lista la caravana en la posición "+index)
+      animalArray.splice(index,1)
       setIfTable(false)
+      rows=[]
       if(animalArray.length>0){
+        populate(animalArray)
+        alert("Se eliminó el registro") 
         setIfTable(true)
-        populate(animalArray) 
       }
     }
 
-    function populate(data,editIcon){
-      rows=[]
+    function populate(data){
+      rows =[]
       data.map(item=>{
         if(rows.includes(item)===false){
           rows.unshift(
@@ -171,10 +169,10 @@ export function Step2(props) {
             ))
           }  
         })
-      }
+      } 
 
-    
-//-------------------------------------------------  
+
+//----------------Form Handlers---------------------------------  
 
 
     const handleGUIA = function(e) {
@@ -209,12 +207,16 @@ export function Step2(props) {
       }
       
       const saveAnimal = function(e) {
+        if(guiaControl.includes(guia.guia)){
+          alert("La guia Nº:"+guia.guia+" ya ha sido usada.\nPor favor verifique el número")
+        }else{   
           if (guia.cantAnimales>0){
             console.log(animalArray)
             animalDetail.establecimientoId=establecimiento
             animalDetail.rodeoId=rodeo
             animalDetail.estado="Engorde"
             animalDetail.fechaIngreso=guia.fechaDescarga
+            animalDetail.guia=guia.guia
             animalDetail.pesoInicial=parseFloat(guia.peso)/parseInt(guia.cantAnimales)
             animalDetail.costoCompra=(parseFloat(props.facturaVendor.totalVendedor)/parseInt(props.facturaVendor.animales))+(parseFloat(props.facturaConsig.totalConsig)/parseInt(props.facturaVendor.animales))+(parseFloat(facturaTransporte.totalFactura)/parseInt(guia.cantAnimales))
             animalDetail.caravana=animalDetail.cug+"-"+animalDetail.manejo+"-"+animalDetail.verificador
@@ -222,12 +224,13 @@ export function Step2(props) {
             populate(animalArray)
             setAnimalDetail(animalInicial)
             setIfTable(true)
-            if (animalArray.length==guia.cantAnimales&&animalArray.length>1){
+            if (animalArray.length==guia.cantAnimales&&animalArray.length>0){
               setEndOfGuia(false)
             }
           }else{
             alert("La cantidad de animales espefificada en la guia debe ser mayor a 0. Verifique la informacioón y vuelva a intentar")
           }
+        } 
       }
       
       const deleteAnimal = function(){
@@ -235,27 +238,27 @@ export function Step2(props) {
       }
 
       const saveGuia = function(){
-        guia.animales=animalArray
+        console.log(animalArray)
         guia.transporte=transporte
         guia.facturaTransporte=facturaTransporte
         guiaS.push(guia)
+        animalArray.map(item=>{
+        guiaS[guiaS.length-1].animales.push(item)
+         })
+        guiaControl.push(guia.guia) 
+        while(animalArray.length>0){
+          animalArray.pop()
+        }
         setGuia(guiaInicial)
         setTransporte(transporteInit)
         setFacturaTransporte(facturaTransportInit)
-        while (animalArray.length>0){
-          animalArray.pop()
-        }
-        console.log(animalArray)
-        setFlete(true)
+        console.log(guiaS)
         setEndOfGuia(true)
         setIfTable(false)
+        setIfTable2(true)
+        props.cancelCompra()
       }
 
-      const handleFlete=function(e){
-        setFlete(!e.target.checked)
-        console.log(e.target.checked)
-      } 
-      
       const handleEstablecimiento = (event) => {
         setEstablecimiento(event.target.value);
         setRodeo("Elija una opción...")
@@ -281,11 +284,17 @@ export function Step2(props) {
         setAnimalArray([])
     }
 
-    const continueFunc = function(e){
+    const SaveFunc = function(e){
         e.preventDefault()
-        props.keepGuiaS(guiaS)
-        setStep("2")
-        
+        if(props.facturaVendor.animales==guiaS[0].animales.length){
+          alert("Se graban los datos aca. Orden Completa")
+          statusCompra="completa"
+        }else{
+          alert("Se graban los datos aca. Orden Incompleta")
+          statusCompra="incompleta"
+        }
+        props.setStep("1")
+        props.setSection("")                
     }
  return (
 
@@ -456,9 +465,7 @@ export function Step2(props) {
                         onChange={(e)=>handleGUIA(e)}
                     />
                     </Grid>
-
-                    <Grid item item xs={12} sm={6}>
-              
+                    <Grid item item xs={12} sm={6}>             
                     </Grid>
                     <Grid item item xs={12} sm={3}>
                     <TextField
@@ -573,7 +580,6 @@ export function Step2(props) {
                     <FormControl 
                              variant="filled"
                              className={classes.formControl}
-                       
                              >
                                 <label>Establecimiento:</label>
                                     <Select
@@ -696,11 +702,11 @@ export function Step2(props) {
                                Guardar GUIA Nº:{guia.guia}
                             </Button>
                         </Grid>}
-
-
-                  </Grid>  
-
+                  </Grid>
+                    
                     <Grid container spacing={2} >
+                    {ifTable2?<Grid container spacing={2} ><TablaGuias data={guiaS}/></Grid>:null}
+                    <Grid item xs={12} sm={3}></Grid><Grid item xs={12} sm={3}></Grid><Grid item xs={12} sm={3}></Grid><Grid item xs={12} sm={3}></Grid>
                       <Grid item xs={12} sm={3}></Grid>
                       <Grid item xs={12} sm={3}>
                           <Button
@@ -713,8 +719,7 @@ export function Step2(props) {
                             </Button>
                         </Grid>
                         <Grid item xs={12} sm={3}>
-                            <Button
-                                
+                            <Button                               
                                 fullWidth
                                 variant="contained"
                                 color="primary"
@@ -724,18 +729,16 @@ export function Step2(props) {
                             </Button>
                         </Grid>
                         <Grid item xs={12} sm={3}>
-                            <Button
-                                
+                            <Button                              
                                 fullWidth
                                 variant="contained"
                                 color="primary"
                                 className={classes.submit}
-                                onClick={(e)=>continueFunc(e)} >
-                                Continuar
+                                onClick={(e)=>SaveFunc(e)} >
+                                Guardar Compra
                             </Button>
                     </Grid>
-                </Grid>
-                    
+                </Grid>            
             </form>
            </Grid>
           </Grid>
@@ -744,19 +747,13 @@ export function Step2(props) {
         </React.Fragment>
     
       )
- 
  }
 
 const mapStateToProps = state => {		
   return {		
-    // guiaN:state.compras.guiaN,
     guiass:state.compras.guias,
-    // transport:state.compras.transporte,
-    // facturaTransport:state.compras.facturaTransporte,
-    // cattleDetail:state.compras.detalleAnimal,
-    // cattleArray:state.compras.animales,
-    // ifTransport:state.compras.ifTransporte,
-    // step:state.compras.step,
+    vendedor:state.compras.vendedor,
+    consignatario:state.compras.consignatario,
     facturaVendor:state.compras.facturaVendor,
     facturaConsig:state.compras.facturaConsig
   }		
@@ -766,16 +763,9 @@ const mapDispatchToProps = dispatch => {
   return {
     cancelCompra:()=>dispatch(cancelCompra()),
     setStep:(number)=>dispatch(setStep(number)),
-    // keepTransport:(transport)=>dispatch(keepTransport(transport)),
-    // keepFacturaTransport:(transportBill)=>dispatch(keepFacturaTransport(transportBill)),
-    // keepGuia:(guiaN)=>dispatch(keepGuia(guiaN)),
     keepGuiaS:(guiaSS)=>dispatch(keepGuiaS(guiaSS)),
-    // keepAnimalDetail:(cattle)=>dispatch(keepAnimalDetail(cattle)),
-    // keepAnimalArray:(cattleObj)=>dispatch(keepAnimalArray(cattleObj)),
-    // transportSwich:(selection)=>dispatch(transportSwich(selection)),
+    setSection:(section)=>dispatch(setSection(section))
   }
 }
     
-
-
 export default connect(mapStateToProps, mapDispatchToProps)(Step2);
