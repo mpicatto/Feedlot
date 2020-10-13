@@ -10,7 +10,7 @@ import Container from '@material-ui/core/Container';
 import {Select, FormControl,MenuItem, IconButton} from '@material-ui/core'
 // import FormControlLabel from '@material-ui/core/FormControlLabel';
 // import Switch from '@material-ui/core/Switch';
-import {cancelCompra,setStep,keepGuiaS,} from '../../../../actions/compras'
+import {cancelCompra,setStep,keepGuiaS,setSection} from '../../../../actions/compras'
 import {connect} from 'react-redux';
 import {guiaInicial,animalInicial,arrayInit,transporteInit,facturaTransportInit} from './initialState'
 //------------------------------MaterialUI Table Imports-------------------------------------------------------------------
@@ -25,13 +25,15 @@ import TableRow from '@material-ui/core/TableRow';
 //----------------------------------------------------------------------------------------------
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import TablaGuias from './guiasTable'
 
 
 let rodeos=[]
 let guiaControl=[]
-let sumaAnimales=""
+let statusCompra=[]
 //------------------------------Table Functions-------------------------------------------------------------------
 let rows=[]
+
 const columns = [
   {id: 'index', label: 'Index', minWidth: 50 },
   {id: 'caravana', label: 'Caravana', minWidth: 100 },
@@ -47,6 +49,7 @@ const columns = [
 function createData(index,caravana, raza, sexo,frame,establecimientoId,rodeoId, editar ,eliminar) {
   return {index, caravana, raza, sexo,frame,establecimientoId,rodeoId, editar,eliminar};
 }
+
 
 //------------------------------Table Functions-------------------------------------------------------------------
 
@@ -87,7 +90,7 @@ export function Step2(props) {
     const [animalDetail, setAnimalDetail]=useState(animalInicial)
     const [animalArray, setAnimalArray] = useState(arrayInit)
     const [ifTable, setIfTable]=useState(false)
-    const [editMode,setEditMode]=useState(false)
+    const [ifTable2, setIfTable2]=useState(false)
     const [establecimiento, setEstablecimiento] = useState(props.establecimiento)
     const [rodeo,setRodeo] = useState(props.rodeo)
     const [endOfGuia,setEndOfGuia] = useState(true)
@@ -167,6 +170,8 @@ export function Step2(props) {
           }  
         })
       } 
+
+
 //----------------Form Handlers---------------------------------  
 
 
@@ -250,6 +255,8 @@ export function Step2(props) {
         console.log(guiaS)
         setEndOfGuia(true)
         setIfTable(false)
+        setIfTable2(true)
+        props.cancelCompra()
       }
 
       const handleEstablecimiento = (event) => {
@@ -277,11 +284,17 @@ export function Step2(props) {
         setAnimalArray([])
     }
 
-    const continueFunc = function(e){
+    const SaveFunc = function(e){
         e.preventDefault()
-        props.keepGuiaS(guiaS)
-        setStep("2")
-        
+        if(props.facturaVendor.animales==guiaS[0].animales.length){
+          alert("Se graban los datos aca. Orden Completa")
+          statusCompra="completa"
+        }else{
+          alert("Se graban los datos aca. Orden Incompleta")
+          statusCompra="incompleta"
+        }
+        props.setStep("1")
+        props.setSection("")                
     }
  return (
 
@@ -689,8 +702,11 @@ export function Step2(props) {
                                Guardar GUIA Nº:{guia.guia}
                             </Button>
                         </Grid>}
-                  </Grid>  
+                  </Grid>
+                    
                     <Grid container spacing={2} >
+                    {ifTable2?<Grid container spacing={2} ><TablaGuias data={guiaS}/></Grid>:null}
+                    <Grid item xs={12} sm={3}></Grid><Grid item xs={12} sm={3}></Grid><Grid item xs={12} sm={3}></Grid><Grid item xs={12} sm={3}></Grid>
                       <Grid item xs={12} sm={3}></Grid>
                       <Grid item xs={12} sm={3}>
                           <Button
@@ -718,8 +734,8 @@ export function Step2(props) {
                                 variant="contained"
                                 color="primary"
                                 className={classes.submit}
-                                onClick={(e)=>continueFunc(e)} >
-                                Continuar
+                                onClick={(e)=>SaveFunc(e)} >
+                                Guardar Compra
                             </Button>
                     </Grid>
                 </Grid>            
@@ -748,6 +764,7 @@ const mapDispatchToProps = dispatch => {
     cancelCompra:()=>dispatch(cancelCompra()),
     setStep:(number)=>dispatch(setStep(number)),
     keepGuiaS:(guiaSS)=>dispatch(keepGuiaS(guiaSS)),
+    setSection:(section)=>dispatch(setSection(section))
   }
 }
     
