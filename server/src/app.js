@@ -41,11 +41,11 @@ passport.use(new Strategy(
   }));
 
   passport.serializeUser(function(user, done){
-    done(null, user.id);
+    done(null, user.cuit);
   });
 
   passport.deserializeUser(function(id, done){
-    db.User.findByPk(id)
+    db.User.findByPk(cuit)
     .then(user => {
       done(null, user);
     })
@@ -92,11 +92,11 @@ server.use((req, res, next) => {
 server.post('/login',
   passport.authenticate('local', {failureRedirect: '/login'}),
   function(req, res) {
-    var aux ={
-      user: req.user,
-      cookie: req.session
-    }
-    res.send(aux);
+    // var aux ={
+    //   user: req.user,
+    //   cookie: req.session
+    // }
+    res.send(req.user);
   });
 
 //PARA DESLOGUIARSE!!!

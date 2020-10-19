@@ -15,12 +15,12 @@ export const CLEAN_USER = 'CLEAN_USER'
 export function addUser(data){
     return function (dispatch){
         console.log(data)
-        return axios.post("http://localhost:3001/user",data)
+         axios.post ("http://localhost:3001/user",data)
         .then(resp=>{
             dispatch({type: ADD_USER, payload: resp.data})
             alert("Usuario creado.")
         })
-        .then(useHistory.push("/feedlot/sitrep"))
+        .then(useHistory.push("/"))
         .catch(err=>{
             alert(err);
         })
@@ -28,7 +28,6 @@ export function addUser(data){
     }
 }
 
-//LOGUEAR USUARIO!!
 export function setUser (user){
     console.log(user);
     return {type:SET_USER, payload:user}
