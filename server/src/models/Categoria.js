@@ -17,7 +17,7 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING(3),
       allowNull: false
     },
-    terminación:{
+    terminacion:{
       type:DataTypes.BOOLEAN,
       allowNull:false
     }

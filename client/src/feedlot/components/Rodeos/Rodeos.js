@@ -1,5 +1,6 @@
 import React,{useState} from 'react';
 import { makeStyles } from '@material-ui/styles'
+import {connect} from 'react-redux';
 import {Container, CssBaseline, Grid} from '@material-ui/core'
 import {Select, FormControl,MenuItem} from '@material-ui/core'
 import ToggleButton from '@material-ui/lab/ToggleButton';
@@ -8,6 +9,8 @@ import { establecimientos} from "./mockData";
 import General from './general/rodeosOverview'
 import Details from './details/rodeoDetails'
 import Compras from './compras/compras'
+
+
 //------import actions------------------
 
 
@@ -50,11 +53,17 @@ const Rodeos = (props) =>{
 
 
     const handleEstablecimiento = (event) => {
+        rodeos=[]
         setEstablecimiento(event.target.value);
         setRodeo("Elija una opción...")
-        for (let i=0;i<establecimientos.length;i++){
-            if(establecimientos[i].nombre===event.target.value){
-                rodeos=establecimientos[i].rodeos
+        for (let i=0;i<props.rodeo.establecimientos.length;i++){
+            if(props.rodeo.establecimientos[i].nombre===event.target.value){
+                let establecimientoId = props.rodeo.establecimientos[i].id
+                props.rodeo.rodeos.map(item=>{
+                    if (item.establecimientoId===establecimientoId){
+                        rodeos.push(item)
+                    }
+                })
             }
         }
         setSection('')
@@ -70,7 +79,8 @@ const Rodeos = (props) =>{
                 selectedRodeo=rodeos[i]
             }
         }
-        setSection('general')
+        
+        // setSection('general')
         if (establecimiento!=="Elija una opción..."){
             disable=false
         }
@@ -106,7 +116,7 @@ const Rodeos = (props) =>{
                                         displayEmpty
                                         >
                                         <MenuItem value={"Elija una opción..."} disabled >Elija una opción...</MenuItem>
-                                        {establecimientos.map(item =>{
+                                        {props.rodeo.establecimientos.map(item =>{
                                             return <MenuItem value={item.nombre}>{item.nombre}</MenuItem>
                                         })}
                             
@@ -179,9 +189,9 @@ const Rodeos = (props) =>{
                     establecimiento={establecimiento}
                    /> : null}
                    {section ==="compras" ? <Compras 
-                    rodeo={rodeo}
+                    rodeo={selectedRodeo.nombre}
                     establecimiento={establecimiento}
-                    data={establecimientos}
+                    data={props.rodeo}
                    /> : null}
                 </Grid> 
             </div>
@@ -190,5 +200,11 @@ const Rodeos = (props) =>{
     )
 }
 
+const mapStateToProps = state => {		
+    return {		
+        user:state.user.user,
+        rodeo:state.rodeo
+    }		
+  }
   
-export default Rodeos;
+  export default connect(mapStateToProps)(Rodeos);  

@@ -7,8 +7,12 @@ module.exports = (sequelize) => {
   sequelize.define('rodeo', {
     nombre: {
       type: DataTypes.STRING(25),
-      allowNull: true
-    },  
+      allowNull: false
+    },
+    userCuit: {
+      type: DataTypes.STRING(11),
+      allowNull: false
+    },    
    },
   )
 };

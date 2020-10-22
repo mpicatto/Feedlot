@@ -82,7 +82,10 @@ export function Step2(props) {
     const classes = useStyles()
     useEffect(()=>{
       setGuiaS(props.guiass)
+      getInfo()
     },[props.guiass,])
+
+
     const [guia, setGuia] = useState(guiaInicial)
     const [guiaS, setGuiaS] = useState([])
     const [transporte, setTransporte]=useState(transporteInit)
@@ -92,14 +95,27 @@ export function Step2(props) {
     const [ifTable, setIfTable]=useState(false)
     const [ifTable2, setIfTable2]=useState(false)
     const [establecimiento, setEstablecimiento] = useState(props.establecimiento)
-    const [rodeo,setRodeo] = useState(props.rodeo)
+    const [rodeo,setRodeo] = useState(props.rodeoElegido)
     const [endOfGuia,setEndOfGuia] = useState(true)
     const [vendorErrors, setVendorErrors] = useState({})
-    for (let i=0;i<props.data.length;i++){
-      if(props.data[i].nombre===establecimiento){
-          rodeos=props.data[i].rodeos
-      }
+ 
+    const getInfo = function(){
+      rodeos=[]    
+      for (let i=0;i<props.data.establecimientos.length;i++){
+      if(props.data.establecimientos[i].nombre===establecimiento){
+        let establecimientoId=props.data.establecimientos[i].id
+        props.data.rodeos.map(item=>{
+          if(item.establecimientoId===establecimientoId){
+            rodeos.push(item)
+          }
+        })
+      }console.log(rodeos)
   }
+}
+
+
+
+
 //-------------function to add data to table-----------------------------------
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -260,14 +276,20 @@ export function Step2(props) {
       }
 
       const handleEstablecimiento = (event) => {
+        rodeos=[]
         setEstablecimiento(event.target.value);
         setRodeo("Elija una opción...")
-        for (let i=0;i<props.data.length;i++){
-          if(props.data[i].nombre===establecimiento){
-              rodeos=props.data[i].rodeos
+        for (let i=0;i<props.data.establecimientos.length;i++){
+          if(props.data.establecimientos[i].nombre===event.target.value){
+              let establecimientoId = props.data.establecimientos[i].id
+              props.data.rodeos.map(item=>{
+                  if (item.establecimientoId===establecimientoId){
+                      rodeos.push(item)
+                  }
+              })
           }
       }
-    };
+    }
 
     const handleRodeo = (event) => {
       setRodeo(event.target.value);
@@ -592,7 +614,7 @@ export function Step2(props) {
                                         displayEmpty
                                         >
                                         <MenuItem value={"Elija una opción..."} disabled >Elija una opción...</MenuItem>
-                                        {props.data.map(item =>{
+                                        {props.data.establecimientos.map(item =>{
                                             return <MenuItem value={item.nombre}>{item.nombre}</MenuItem>
                                         })}
                                     </Select>

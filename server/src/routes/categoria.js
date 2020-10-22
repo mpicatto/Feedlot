@@ -3,11 +3,11 @@ const { Sequelize } = require('sequelize');
 const { Categoria } = require('../db.js');
 
 
-//trae los usuarios por cuit
+//trae las categorias por cuit
 server.get('/:cuit',(req,res,next)=>{
     let cuit = req.params.cuit
-    User.findAll({
-      where:{cuit:cuit}
+    Categoria.findAll({
+      where:{userCuit:cuit}
     })
     .then(user=>{if(user){res.send(user)
     return}
@@ -24,6 +24,7 @@ server.post('/',async(req,res)=>{
       terminacion,
       userCuit
     } = req.body;
+    console.log(req.body)
 
      //se crea la categoria
       Categoria.create({

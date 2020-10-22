@@ -1,8 +1,9 @@
 import{SET_RODEO} from '../actions/rodeo'
 
 const initialState ={
-        establecimiento:"Elija una opción...",
-        rodeo:"Elija una opción..."
+        establecimientos:[],
+        rodeos:[],
+        categoria:[]
     
 }
 
@@ -10,8 +11,9 @@ export default function rodeo (state = initialState, action){
     if (action.type === SET_RODEO){
         return {
             ...state,
-            establecimiento:action.payload.establecimiento,
-            rodeo:action.payload.rodeo
+            establecimientos:action.payload.establecimientos,
+            rodeos:action.payload.rodeos,
+            categoria:action.payload.categoria
         }
     }
     return state

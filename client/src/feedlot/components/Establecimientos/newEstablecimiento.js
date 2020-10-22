@@ -10,7 +10,7 @@ import Container from '@material-ui/core/Container';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import {Select, FormControl,MenuItem, IconButton} from '@material-ui/core'
-
+import {rodeoInicial} from './initialState'
 import {connect} from 'react-redux';
 //------------------------------MaterialUI Table Imports-------------------------------------------------------------------
 import Paper from '@material-ui/core/Paper';
@@ -25,6 +25,8 @@ import TableRow from '@material-ui/core/TableRow';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
+
+let rodeoArray=[]
 //------------------------------Table Functions-------------------------------------------------------------------
 let rows=[]
 
@@ -32,17 +34,18 @@ const columns = [
   {id: 'index', label: 'Index', minWidth: 50 },
   {id: 'nombre', label: 'Nombre', minWidth: 100 },
   {id: 'categoria', label: 'categoria', minWidth: 50,align: 'right'},
+  {id: 'peso_min', label: 'Peso Minimo(kg)', minWidth: 50,align: 'center'},
+  {id: 'peso_max', label: 'Peso Maximo(kg)', minWidth: 50,align: 'center'},
   {id: 'editar',label: 'Editar',minWidth: 50, align: 'right',},
   {id: 'eliminar',label: 'Eliminar',minWidth: 50, align: 'right', },
 ];
 
-function createData(index,nombre, categoria, editar ,eliminar) {
-  return {index,nombre, categoria, editar ,eliminar};
+function createData(index,nombre, categoria,peso_min,peso_max, editar ,eliminar) {
+  return {index,nombre, categoria,peso_min,peso_max, editar ,eliminar};
 }
 
 
-//------------------------------Table Functions-------------------------------------------------------------------
-
+//-------------------------------------------------------------------------------------------------------------------
 
 //ESTILOS DE MATERIAL UI
 const useStyles = makeStyles((theme) => ({
@@ -51,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent:"space-around",
-      width:"70%"
+      width:"100%"
     },
     formControl: {
         margin: theme.spacing(1),
@@ -65,15 +68,22 @@ const useStyles = makeStyles((theme) => ({
   }));
 
 export function NuevoEstablecimiento(props) {
+    useEffect(()=>{
+      getCategories()
+    },[])
+  
     const classes = useStyles()
-
+    
     const [establecimiento, setEstablecimiento] = useState({})
-    const [rodeo, setRodeo] = useState({})
-    const [categoria,setCategoria]=useState(true)
-    const [rodeoDetail, setRodeoDetail]=useState()
-    const [rodeoArray, setRodeoArray] = useState()
+    const [establecimientoId, setEstablecimientoId] = useState("")
+    const [rodeo, setRodeo] = useState(rodeoInicial)
+    const [categoria,setCategoria]=useState("")
+    const [catArray, setCatArray]=useState([])
     const [ifTable, setIfTable]=useState(false)
     const [ifNewCategoria, setIfNewCategoria]=useState(false)
+    const [terminacion, setTerminacion]=useState(false)
+
+    
 
     const handleEstablecimiento = function(e) {
         setEstablecimiento({
@@ -91,25 +101,105 @@ export function NuevoEstablecimiento(props) {
         console.log(rodeo)
       }
 
+      const handleBorrar = function(){
+        setRodeo("")
+        window.location.reload()
+      }
+
+      const saveRodeo = function (){
+        console.log(catArray)
+        let data={}
+        data.nombre=rodeo.rodeo_nombre
+        data.categoria=rodeo.categoria
+        catArray.map(item=>{
+          if(item.id===rodeo.categoria){
+            data.category_name=item.nombre
+            data.peso_min=item.peso_min
+            data.peso_max=item.peso_max
+            data.terminacion=item.terminacion
+          }
+        })       
+        rodeoArray.push(data)
+        populate(rodeoArray)
+        setRodeo(rodeoInicial)
+        setIfTable(true)
+
+        console.log(rodeoArray)
+
+      }
+        
+      const newCategoryToggle = function(){
+        setIfNewCategoria(true)
+      }
+
       const handleCategoria = function(e) {
-        setRodeo({
-          ...rodeo,
+        setCategoria({
+          ...categoria,
           [e.target.name]:e.target.value
         })
         console.log(categoria)
       }
 
+      const handleTerminacion = async function(e) {
+        setTerminacion(e.target.checked)
+      }
+      console.log(terminacion)
+
       const newCategory = function(e){
         e.preventDefault()
+        let data = {
+          nombre:categoria.categoria_nombre,
+          peso_min:categoria.p_min,
+          peso_max:categoria.p_max,
+          terminacion:terminacion,
+          userCuit:props.user.cuit
+        }
+        console.log(data)
+        Axios.post('http://localhost:3001/categoria',data)
+        .then( async res=>{
+             await alert("Categoria "+ data.nombre + " creada")
+             getCategories()
+             setCategoria("")
+             setTerminacion(false)
+             window.location.reload()
+        })
+        .catch(err =>{
+          alert("Error en la base de datos, intente nuevamente")
+        })
+       
     }
 
-      const cancelFunc = function(e){
-          e.preventDefault()
+      const categoryCancel = function(e){
+          setCategoria("")
+          setIfNewCategoria(false)
+          
       }
 
-      const continueFunc = function(e){
+      const cancelFunc = function(e){
+        e.preventDefault()
+        setEstablecimiento("")
+        setRodeo({})
+        rodeoArray=[]
+        setIfTable(false)
+    }
+
+      const saveFunc = async function(e){
           e.preventDefault()
-          
+          let data={
+            nombre_establecimiento:establecimiento.nombre,
+            establecimiento_cp:establecimiento.cp,
+            userCuit:props.user.cuit,
+            rodeoArray:rodeoArray  
+          }
+
+          await Axios.post('http://localhost:3001/establecimiento',data)
+          .then( res=>{
+            alert(res.data)
+          })
+          .catch(err =>{
+            alert("Error en la base de datos, intente nuevamente")
+          })
+          window.location.reload()
       }
 
       //-------------function to add data to table-----------------------------------
@@ -126,15 +216,15 @@ export function NuevoEstablecimiento(props) {
     };
 
     const handleEdit = (index) =>{
-    //   setRodeoDetail({
-    // //     cug:animalArray[index].cug,
-    // //     manejo:animalArray[index].manejo,
-    // //   })
-    // // animalArray.splice(index,1)  
+       setRodeo({
+        rodeo_nombre:rodeoArray[index].nombre,
+        categoria:rodeoArray[index].cetegoria,
+      })
+     rodeoArray.splice(index,1)  
     }
 
     const handleDelete = (index) =>{ 
-      alert("Se eliminara de la lista la caravana en la posición "+index)
+      alert("Se eliminara de la lista el rodeo en la posicion "+index)
       rodeoArray.splice(index,1)
       setIfTable(false)
       rows=[]
@@ -152,12 +242,10 @@ export function NuevoEstablecimiento(props) {
           rows.unshift(
             createData(
             data.indexOf(item),
-            item.caravana,
-            item.raza,
-            item.sexo,
-            item.frame,
-            item.establecimientoId,
-            item.rodeoId,
+            item.nombre,
+            item.category_name,
+            item.peso_min,
+            item.peso_max,
             <IconButton onClick={()=>handleEdit(data.indexOf(item))}>
               <EditIcon color="secundary" />
             </IconButton>,
@@ -169,65 +257,89 @@ export function NuevoEstablecimiento(props) {
           }  
         })
       } 
+    //------------------------------Get Categories Function-------------------------------------------------------------------
+ 
+function getCategories(){
+  
+  Axios.get('http://localhost:3001/categoria/'+props.user.cuit)
+  .then(res=>{
+      setCatArray(res.data)
+  })
+  .catch(err =>{
+    alert("Error en la base de datos, intente nuevamente")
+  })
+
+}  
 
  
     return (
-
         <React.Fragment>
           <CssBaseline />
-          <Container className={classes.container}  >
-          <Grid
-           container
-           direction="row"
-           justify="space-around"
-           alignItems="center"
-           pa>
-            <Grid >
-            <form className={classes.form} noValidate>
+          <Container className={classes.container} >
+          
+          {!ifNewCategoria?
+          <Grid 
+          container
+          direction="row"
+          justify="space-around"
+          alignItems="center">
+            <form className={classes.form} noValidate><hr></hr>
+            
                 <Grid className={classes.container}> 
-                    <Typography component="h1" variant="h5">
+                    <Typography component="h1" variant="h4">
                     Nuevo Establecimiento
                     </Typography>
                 </Grid>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} sm={8}>
-                    <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="nombre"
-                        label="Nombre"
-                        name="nombre"
-                        onChange={(e)=>handleEstablecimiento(e)}
-                    />
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                    <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="cp"
-                        label="Cod. Postal Establecimiento"
-                        name="cp"
-                        onChange={(e)=>handleEstablecimiento(e)}
-                    />
-                    </Grid>
+                  <Grid item xs={12} sm={8}>
+                  <FormControl variant="filled" className={classes.formControl}>
+                  <label>Nombre:</label>
+                      <TextField
+                          variant="outlined"
+                          required
+                          fullWidth
+                          id="nombre"
+                          name="nombre"
+                          onChange={(e)=>handleEstablecimiento(e)}
+                      />
+                  </FormControl>  
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                  <FormControl variant="filled" className={classes.formControl}>
+                  <label>Codigo Postal:</label>
+                      <TextField
+                          variant="outlined"
+                          required
+                          fullWidth
+                          id="cp"
+                          name="cp"
+                          onChange={(e)=>handleEstablecimiento(e)}
+                      />
+                    </FormControl>  
+                  </Grid>
+                </Grid>
                 <Grid className={classes.container}> 
                   <Typography component="h1" variant="h5">
                   Agregar Rodeos
                   </Typography>
                 </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={5}>
-                      <TextField
+                <Grid container spacing={2}
+                direction="row"
+                // justify="space-around"
+                alignItems='center'>
+                    <Grid item xs={12} sm={8}>
+                    <FormControl variant="filled" className={classes.formControl}>
+                        <label>Nombre:</label>
+                        <TextField
                           variant="outlined"
                           required
                           fullWidth
                           id="rodeo_nombre"
-                          label="Nombre"
                           name="rodeo_nombre"
+                          value={rodeo.rodeo_nombre}                         
                           onChange={(e)=>handleRodeo(e)}
-                      />
+                          />
+                       </FormControl>   
                     </Grid>
                     <Grid item xs={12} sm={4}>
                       <FormControl variant="filled" className={classes.formControl}>
@@ -236,16 +348,132 @@ export function NuevoEstablecimiento(props) {
                                 labelId="label"
                                 id="demo-simple-select-outlined"
                                 name="categoria"
-                                onChange={handleRodeo}
+                                value={rodeo.categoria}
+                                onChange={(e)=>handleRodeo(e)}
                                 label="categoria"
                                 displayEmpty
                                 >
                                   <MenuItem value={"Elija una opción..."} disabled >Elija una opción...</MenuItem>
-                                {/* {rodeo.map(item =>{
-                                    return <MenuItem value={item.nombre}>{item.nombre}</MenuItem>
-                                })} */}
+                                  {catArray.map(item =>{
+                                            return <MenuItem value={item.id}>{item.nombre}</MenuItem>
+                                        })}
                             </Select>
                         </FormControl>
+                    </Grid>
+            
+                    <Grid item xs={12} sm={3}></Grid>
+                    <Grid item xs={12} sm={3}>
+                      <Button                        
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        className={classes.submit}
+                        onClick={(e)=>newCategoryToggle(e)} >
+                        Nueva Categoria
+                      </Button>
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
+                    <Button                        
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        className={classes.submit}
+                        onClick={(e)=>handleBorrar(e)} 
+                        >
+                        Borrar
+                      </Button>
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
+                    <Button                        
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        className={classes.submit}
+                        onClick={(e)=>saveRodeo(e)} 
+                        >
+                        Agregar Rodeo
+                      </Button>
+                    </Grid>
+                </Grid>
+                
+            </form>
+          </Grid>
+          :
+          <Grid
+           container
+           direction="row"
+           justify="space-around"
+           alignItems="center"
+           width="70%">
+            <form className={classes.form} noValidate>
+                <Grid className={classes.container}> 
+                    <Typography component="h1" variant="h5">
+                    Nueva Categoria
+                    </Typography>
+                </Grid>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={2}></Grid>
+                  <Grid item xs={12} sm={4}>
+                    <FormControl variant="filled" className={classes.formControl}>
+                    <label>Nombre:</label>
+                        <TextField
+                            variant="outlined"
+                            required
+                            fullWidth
+                            id="categoria_nombre"
+                            name="categoria_nombre"
+                            onChange={(e)=>handleCategoria(e)}
+                        />
+                    </FormControl>  
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
+                    <FormControl variant="filled" className={classes.formControl}>
+                    <label>Peso Minimo</label>
+                        <TextField
+                            variant="outlined"
+                            required
+                            fullWidth
+                            id="p_min"
+                            name="p_min"
+                            onChange={(e)=>handleCategoria(e)}
+                        />
+                    </FormControl>  
+                    </Grid>
+         
+                    <Grid item xs={12} sm={2}>
+                    <FormControl variant="filled" className={classes.formControl}>
+                    <label>Peso Maximo</label>
+                        <TextField
+                            variant="outlined"
+                            required
+                            fullWidth
+                            id="p_max"
+                            name="p_max"
+                            onChange={(e)=>handleCategoria(e)}
+                        />
+                    </FormControl>
+
+                    </Grid>
+                    <Grid item xs={12} sm={2}></Grid>
+
+                    <Grid item xs={12} sm={2}></Grid>
+                    <Grid item item xs={12} sm={2}>
+                    <FormControlLabel
+                        control={<Switch color="primary" />}
+                        label="Terminacion"
+                        value="on"
+                        onChange={(e)=>handleTerminacion(e)}
+                        />
+                    </Grid>  
+                    <Grid item xs={12} sm={3}>
+                      <Button                        
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        className={classes.submit}
+                        onClick={(e)=>categoryCancel(e)} >
+                        Cancelar
+                      </Button>
                     </Grid>
                     <Grid item xs={12} sm={3}>
                       <Button                        
@@ -254,77 +482,19 @@ export function NuevoEstablecimiento(props) {
                         color="primary"
                         className={classes.submit}
                         onClick={(e)=>newCategory(e)} >
-                        Crear Nueva Categoria
+                        Guardar
                       </Button>
                     </Grid>
-                  </Grid>
-              <Grid container spacing={2}>
-
-                <Grid className={classes.container}> 
-                  <Typography component="h1" variant="h5">
-                  Crear Nueva Categoria
-                  </Typography>
+                    <Grid item xs={12} sm={2}></Grid>
                 </Grid>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                      <TextField
-                          variant="outlined"
-                          required
-                          fullWidth
-                          id="categoria_nombre"
-                          label="Nombre"
-                          name="categoria_nombre"
-                          onChange={(e)=>handleCategoria(e)}
-                      />  
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                      <TextField
-                          variant="outlined"
-                          required
-                          fullWidth
-                          id="p_min"
-                          label="Peso Mínimo"
-                          name="p_min"
-                          onChange={(e)=>handleCategoria(e)}
-                      />  
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                      <TextField
-                          variant="outlined"
-                          required
-                          fullWidth
-                          id="p_max"
-                          label="Peso Máximo"
-                          name="p_max"
-                          onChange={(e)=>handleCategoria(e)}
-                      />  
-                  </Grid>
-                  <Grid item xs={12} sm={7}></Grid>
-                  <Grid item item xs={12} sm={2}>
-                    <FormControlLabel
-                        control={<Switch color="primary" />}
-                        label="Terminación"
-                        value={true}
-                        onChange={(e)=>handleCategoria(e)}
-                        />
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <Button                        
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        className={classes.submit}
-                        onClick={(e)=>newCategory(e)} >
-                        Guardar Categoria
-                    </Button>
-                </Grid>
-
-              </Grid>
-
-                
-{/* //-------------------------MaterialUI-Table---------------------------------------------------------------------- */}
-
-            {ifTable?    <Paper className={classes.root}>
+            </form>
+           </Grid>
+          }
+          <Grid container spacing={2} >
+          <Grid item xs={12} sm={12}></Grid>
+          <hr></hr><hr></hr>  
+          </Grid>
+          {ifTable?    <Paper className={classes.root}>
                   <TableContainer className={classes.tableContainer}>
                     <Table stickyHeader aria-label="sticky table">
                       <TableHead>
@@ -369,38 +539,43 @@ export function NuevoEstablecimiento(props) {
                   />
                 </Paper>:null}
 
-{/* //-------------------------MaterialUI-Table---------------------------------------------------------------------- */}
-
-                 </Grid>
-                </Grid>               
-                  <Grid container spacing={2} >
-                    <Grid item xs={12} sm={6}></Grid>
-                        <Grid item xs={12} sm={3}>
-                            <Button   
-                                fullWidth
-                                variant="contained"
-                                color="primary"
-                                className={classes.submit}
-                                onClick={(e)=>cancelFunc(e)} >
-                                Cancelar
-                            </Button>
-                        </Grid>
-                        <Grid item xs={12} sm={3}>
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                color="primary"
-                                className={classes.submit}
-                                onClick={(e)=>continueFunc(e)} >
-                                Guardar
-                            </Button>
+                        <hr></hr>
+               { ifTable? <Grid 
+                container
+                direction="row"
+                justify='space-evenly'
+                alignContent='center'
+                alignItems="center">
+                <Grid container spacing={2} >
+                <Grid item xs={12} sm={3}></Grid>
+                    <Grid item xs={12} sm={3}>
+                    <Button                        
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        className={classes.submit}
+                        onClick={(e)=>cancelFunc(e)} 
+                        >
+                        Cancelar
+                      </Button>
                     </Grid>
-                </Grid>
-                    
-            </form>
-           </Grid>
-          </Grid>
-     
+                    <Grid item xs={12} sm={3}>
+                    <Button                        
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        className={classes.submit}
+                        onClick={(e)=>saveFunc(e)} 
+                        >
+                        Guardar Establecimiento
+                      </Button>
+                    </Grid>
+                    <Grid item xs={12} sm={3}></Grid>
+                    </Grid>
+                    </Grid>
+                    :null}
+            
+         
           </Container>
         </React.Fragment>
     
@@ -409,8 +584,9 @@ export function NuevoEstablecimiento(props) {
  }
 
 const mapStateToProps = state => {
-  return{user:state.user}				
+  return{user:state.user.user}				
 }
+
 
 const mapDispatchToProps = dispatch => {
 

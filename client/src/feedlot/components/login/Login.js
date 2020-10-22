@@ -77,7 +77,7 @@ export function Copyright() {
           email:res.data.email,
         }
         props.setUser(data)
-        history.push("/feedlot/sitrep")
+        history.push("/establecimientos")
       })
     }
     //COMPONENTE DE MATERIAL UI

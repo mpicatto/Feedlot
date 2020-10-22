@@ -36,7 +36,6 @@ const Compras = (props) =>{
     const classes = useStyles()
     const [section,setSection] = useState("")
     
-
     const handleSection = (event, newSelection) =>{
         props.setSection(newSelection)
         // setSection(newSelection)
