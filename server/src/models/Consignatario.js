@@ -8,17 +8,13 @@ module.exports = (sequelize) => {
     cuit:{
       type:DataTypes.STRING(11),
       allowNull:false,
-      primaryKey: true,
-      unique: true,
+
       },
      razon_social:{
       type:DataTypes.STRING(50),
       allowNull:true
       },
-    razon_social:{
-      type:DataTypes.STRING(50),
-      allowNull:true
-     },
+
      direccion_fiscal:{
       type:DataTypes.STRING(100),
       allowNull:true
@@ -34,9 +30,9 @@ module.exports = (sequelize) => {
     email: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      validate: {
-          isEmail: true
-      }
+      // validate: {
+      //     isEmail: true
+      // }
     },
    },
   )

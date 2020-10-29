@@ -13,9 +13,13 @@ module.exports = (sequelize) => {
       type:DataTypes.STRING(50),
       allowNull:true
      },
-     fecha:{
-      type:DataTypes.DATE,
-      allowNull:true
+     guiaId:{
+      type:DataTypes.STRING,
+      allowNull:false
+     },
+     cuiTransporte:{
+      type:DataTypes.STRING,
+      allowNull:false
      },
      
     },

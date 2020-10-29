@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react';
-// import Axios from 'axios';
+import Axios from 'axios';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
@@ -10,7 +10,7 @@ import Container from '@material-ui/core/Container';
 import {Select, FormControl,MenuItem, IconButton} from '@material-ui/core'
 // import FormControlLabel from '@material-ui/core/FormControlLabel';
 // import Switch from '@material-ui/core/Switch';
-import {cancelCompra,setStep,keepGuiaS,setSection} from '../../../../actions/compras'
+import {cancelCompra,setStep,setSection} from '../../../../actions/compras'
 import {connect} from 'react-redux';
 import {guiaInicial,animalInicial,arrayInit,transporteInit,facturaTransportInit} from './initialState'
 //------------------------------MaterialUI Table Imports-------------------------------------------------------------------
@@ -30,7 +30,7 @@ import TablaGuias from './guiasTable'
 
 let rodeos=[]
 let guiaControl=[]
-let statusCompra=[]
+let statusCompra=''
 //------------------------------Table Functions-------------------------------------------------------------------
 let rows=[]
 
@@ -40,14 +40,14 @@ const columns = [
   {id: 'raza', label: 'Raza', minWidth: 50,align: 'right'},
   {id: 'sexo',label: 'Sexo',minWidth: 50,align: 'right'},
   {id: 'frame',label: 'Frame',minWidth: 50, align: 'right',},
-  {id: 'establecimientoId',label: 'Establecimiento',minWidth: 100, align: 'right',},
-  {id: 'rodeoId',label: 'Rodeo',minWidth: 75, align: 'right',},
+  {id: 'establecimientoNombre',label: 'Establecimiento',minWidth: 100, align: 'right',},
+  {id: 'rodeoNombre',label: 'Rodeo',minWidth: 75, align: 'right',},
   {id: 'editar',label: 'Editar',minWidth: 50, align: 'right',},
   {id: 'eliminar',label: 'Eliminar',minWidth: 50, align: 'right', },
 ];
 
-function createData(index,caravana, raza, sexo,frame,establecimientoId,rodeoId, editar ,eliminar) {
-  return {index, caravana, raza, sexo,frame,establecimientoId,rodeoId, editar,eliminar};
+function createData(index,caravana, raza, sexo,frame,establecimientoNombre,rodeoNombre, editar ,eliminar) {
+  return {index, caravana, raza, sexo,frame,establecimientoNombre,rodeoNombre, editar,eliminar};
 }
 
 
@@ -140,8 +140,8 @@ export function Step2(props) {
         frame: animalArray[index].frame,
         pesoInicial:animalArray[index].pesoInicial ,
         pesoActual:animalArray[index].pesoActual,
-        establecimientoId:animalArray[index].establecimientoId,
-        rodeoId:animalArray[index].rodeoId,
+        establecimientoNombre:animalArray[index].establecimientoNombre,
+        rodeoNombre:animalArray[index].rodeoNombre,
         fechaIngreso:animalArray[index].fechaIngreso,
         fechaEgreso:animalArray[index].fechaEgreso,
         estado:animalArray[index].estado,
@@ -173,8 +173,8 @@ export function Step2(props) {
             item.raza,
             item.sexo,
             item.frame,
-            item.establecimientoId,
-            item.rodeoId,
+            item.establecimientoNombre,
+            item.rodeoNombre,
             <IconButton onClick={()=>handleEdit(data.indexOf(item))}>
               <EditIcon color="secundary" />
             </IconButton>,
@@ -223,13 +223,28 @@ export function Step2(props) {
       }
       
       const saveAnimal = function(e) {
+        let establecimientoId=""
+        let rodeoId=""
+        
+        for (let i=0;i<props.data.establecimientos.length;i++){
+          if(props.data.establecimientos[i].nombre===establecimiento){
+            establecimientoId=props.data.establecimientos[i].id
+            props.data.rodeos.map(item=>{
+              if(item.establecimientoId===establecimientoId&&item.nombre===rodeo){
+                rodeoId=item.id
+              }
+            })
+          }
+      }
         if(guiaControl.includes(guia.guia)){
           alert("La guia Nº:"+guia.guia+" ya ha sido usada.\nPor favor verifique el número")
         }else{   
           if (guia.cantAnimales>0){
             console.log(animalArray)
-            animalDetail.establecimientoId=establecimiento
-            animalDetail.rodeoId=rodeo
+            animalDetail.establecimientoId=establecimientoId
+            animalDetail.rodeoId=rodeoId
+            animalDetail.rodeoNombre=rodeo
+            animalDetail.establecimientoNombre=establecimiento
             animalDetail.estado="Engorde"
             animalDetail.fechaIngreso=guia.fechaDescarga
             animalDetail.guia=guia.guia
@@ -272,7 +287,7 @@ export function Step2(props) {
         setEndOfGuia(true)
         setIfTable(false)
         setIfTable2(true)
-        props.cancelCompra()
+        // props.cancelCompra()
       }
 
       const handleEstablecimiento = (event) => {
@@ -308,6 +323,11 @@ export function Step2(props) {
 
     const SaveFunc = function(e){
         e.preventDefault()
+        if(!guiaS.length){
+          return alert("Debe haber al menos una guia para guardar la compra")
+          
+        }
+
         if(props.facturaVendor.animales==guiaS[0].animales.length){
           alert("Se graban los datos aca. Orden Completa")
           statusCompra="completa"
@@ -315,8 +335,54 @@ export function Step2(props) {
           alert("Se graban los datos aca. Orden Incompleta")
           statusCompra="incompleta"
         }
-        props.setStep("1")
-        props.setSection("")                
+
+        let operacion ={
+          data:{
+            tipo:"compra",
+            estado:statusCompra,
+            userCuit:props.user.cuit,
+            cant_animales:props.facturaVendor.animales
+          },
+          cliente_externo:{
+            cuit:props.vendedor.vendor_cuit,
+            razon_social:props.vendedor.vendor_razon_social,
+            direccion_fiscal:props.vendedor.vendor_addressFiscal,
+            cp:props.vendedor.vendor_cp,
+            telefono:props.vendedor.vendor_celular,
+            email:props.vendedor.vendor_email,
+          },
+          consignatario:{
+            cuit:props.consignatario.cuit,
+            razon_social:props.consignatario.razon_social,
+            direccion_fiscal:props.consignatario.addressFiscal,
+            cp:props.consignatario.cp,
+            telefono:props.consignatario.celular,
+            email:props.consignatario.email,
+          },
+          factura_cliente:{
+            numero:props.facturaVendor.facturaVendedor,
+            total:props.facturaVendor.totalVendedor,
+            fecha:props.facturaVendor.fechaCompra,
+            clienteExternoCuit:props.vendedor.vendor_cuit
+          },
+          factura_consig:{
+            numero:props.facturaConsig.facturaVendedor,
+            total:props.facturaConsig.totalVendedor,
+            fecha:props.facturaConsig.fechaCompra,
+            consignatarioCuit:props.consignatario.cuit
+          },
+  
+          guias:guiaS
+        }
+
+        Axios.post('http://localhost:3001/operaciones',operacion)
+        .then(res=>{
+          console.log(res.data)
+          // props.setStep("1")
+          // props.setSection("")  
+        })
+
+              
     }
  return (
 
@@ -777,7 +843,8 @@ const mapStateToProps = state => {
     vendedor:state.compras.vendedor,
     consignatario:state.compras.consignatario,
     facturaVendor:state.compras.facturaVendor,
-    facturaConsig:state.compras.facturaConsig
+    facturaConsig:state.compras.facturaConsig,
+    user:state.user.user
   }		
 }
 
@@ -785,7 +852,6 @@ const mapDispatchToProps = dispatch => {
   return {
     cancelCompra:()=>dispatch(cancelCompra()),
     setStep:(number)=>dispatch(setStep(number)),
-    keepGuiaS:(guiaSS)=>dispatch(keepGuiaS(guiaSS)),
     setSection:(section)=>dispatch(setSection(section))
   }
 }

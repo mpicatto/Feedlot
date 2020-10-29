@@ -33,7 +33,7 @@ sequelize.models = Object.fromEntries(capsEntries);
 // Para relacionarlos hacemos un destructuring
  const {User,Establecimiento,Categoria,Operacion,Cliente_externo,Consignatario,
   Factura_Cliente, Factura_Consig,Guia, Transporte,Chofer,Vehiculo,Factura_Transporte,
-  Rodeo, Caravana,Dieta,Alimento,} = sequelize.models;
+  Rodeo, Caravana,Dieta,Alimento,Guia_Transporte,Guia_Caravana,Consig_Operacion,Cliente_Operacion} = sequelize.models;
 
 // Aca vendrian las relaciones
 //Product.hasMany(Reviews);
@@ -50,26 +50,28 @@ Factura_Cliente.belongsTo(Cliente_externo)
 Operacion.hasOne(Factura_Consig)
 Factura_Consig.belongsTo(Operacion)
 Factura_Consig.belongsTo(Consignatario)
-Guia.hasOne(Factura_Transporte)
-Factura_Transporte.belongsTo(Guia)
-Transporte.hasOne(Factura_Transporte)
-Factura_Transporte.belongsTo(Transporte)
-Guia.hasOne(Vehiculo)
-Vehiculo.belongsToMany(Guia,{ through: "guia_vehiculo" })
-Transporte.hasMany(Vehiculo)
-Vehiculo.belongsTo(Transporte)
-Guia.hasOne(Chofer)
-Chofer.belongsToMany(Guia,{ through: "guia_chofer" })
-Transporte.hasMany(Chofer)
-Chofer.belongsTo(Transporte)
+// Operacion.hasMany(Guia)
+// Guia.belongsTo(Operacion)
+// Guia.hasOne(Factura_Transporte)
+// Factura_Transporte.belongsTo(Guia)
+// Transporte.hasOne(Factura_Transporte)
+// Factura_Transporte.belongsTo(Transporte)
+// Guia.hasOne(Vehiculo)
+// Vehiculo.belongsToMany(Guia,{ through: "guia_vehiculo" })
+// Transporte.hasMany(Vehiculo)
+// Vehiculo.belongsTo(Transporte)
+// Guia.hasOne(Chofer)
+// Chofer.belongsToMany(Guia,{ through: "guia_chofer" })
+// Transporte.hasMany(Chofer)
+// Chofer.belongsTo(Transporte)
 Establecimiento.hasMany(Rodeo)
 Rodeo.belongsTo(Establecimiento)
 Categoria.hasMany(Rodeo)
 Rodeo.belongsTo(Categoria)
-Rodeo.hasMany(Caravana)
-Caravana.belongsTo(Rodeo)
-Guia.hasMany(Caravana)
-Caravana.belongsToMany(Guia,{ through: "guia_caravana" })
+// Rodeo.hasMany(Caravana)
+// Caravana.belongsTo(Rodeo)
+// Guia.hasMany(Caravana)
+// Caravana.belongsToMany(Guia,{ through: "guia_caravana" })
 Categoria.hasOne(Dieta)
 Dieta.belongsTo(Categoria)
 

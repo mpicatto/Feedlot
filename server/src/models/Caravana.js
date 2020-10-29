@@ -25,23 +25,40 @@ module.exports = (sequelize) => {
         values:["1","2","3","4","5","6","7","8","9"],
         allowNull: false
       },
+      fecha_ingreso: {
+        type:DataTypes.STRING(11),
+        allowNull: true
+      },
       peso_inicio: {
         type: DataTypes.STRING(5),
-        allowNull: false
+        allowNull: true
       },
       peso_actual: {
         type: DataTypes.STRING(5),
-        allowNull: false
+        allowNull: true
       },
       fecha_pesaje: {
-        type: DataTypes.DATE,
-        allowNull: false
+        type: DataTypes.STRING(11),
+        allowNull: true
+      },
+      fecha_egreso: {
+        type: DataTypes.STRING(11),
+        allowNull: true
       },
       estado: {
         type: DataTypes.ENUM,
-        values:["en engorde","enfermo","vendido","muerto"],
+        values:["Engorde","enfermo","vendido","muerto"],
         allowNull: false
-      },                
+      },
+      rodeoId:{
+          type: DataTypes.STRING,
+          allowNull: false
+        },
+      establecimientoId:{
+          type: DataTypes.STRING,
+          allowNull: false
+        },  
+                     
    },
   )
 };
