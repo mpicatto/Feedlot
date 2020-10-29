@@ -97,7 +97,6 @@ export function Step1(props) {
 
       const handleIfConsig= function(e){
         setIfConsignatario(!e.target.checked)
-        console.log(ifConsignatario)
       }  
 
       const handleComission = function(e){

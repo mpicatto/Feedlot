@@ -1,5 +1,6 @@
 import React,{useState} from 'react';
-// import Axios from 'axios';
+import {useHistory} from 'react-router-dom';
+import Axios from 'axios';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -13,9 +14,11 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import {addUser, cleanUser} from '../../actions/user.js';
+import {cleanUser} from '../../actions/user.js';
 import { setRedirectOff} from '../../actions/global'
 import {connect} from 'react-redux';
+
+
 
 //ESTILOS DE MATERIAL UI
 const useStyles = makeStyles((theme) => ({
@@ -40,38 +43,61 @@ const useStyles = makeStyles((theme) => ({
 
 
 export function Register(props) {
-  
+    const history = useHistory()
     const classes = useStyles();
     const [input,setInput]=useState({
-        name:'',
-        lastName:'',
+        cuit:'',
+        razon_social:'',
         email:'',
         password:'',
-        birthday:"",
-        address:"",
-        city:"",
-        province:"",
+        nombre:"",
+        apellido:"",
+        calle:"",
+        numero:"",
+        departamento:"",
+        localidad:"",
+        provincia:"",
         cp:"",
-        country:""
+        telefono1:"",
+        telefono2:""
     });
 
-    const onSend = async function(e){
+
+
+    const onSend = function(e){
       e.preventDefault();
+    
       let data = {
-          name:props.user.name,
-          lastName:props.user.lastName,
+          cuit:props.user.cuit,
+          razon_social:props.user.razon_social,
           email:props.user.email,
           password:props.user.password,
-          birthday:input.birthday,
-          address:input.address + "," + input.city + "," 
-                 + input.province + "," + input.cp,
-          country:input.country       
+          nombre:input.nombre,
+          apellido:input.apellido,
+          calle:input.calle,
+          numero:input.numero,
+          departamento:input.departamento,
+          localidad:input.localidad,
+          provincia:input.provincia,
+          cp:input.cp,
+          telefono1:input.telefono1,
+          telefono2:input.telefono2
       };
       console.log(data);
-      await props.addUser(data);
+
+      Axios.post ("http://localhost:3001/user",data)
+      .then(res=>{
+        if(res.status===201){
+          alert("Usuario creado.")
+          history.push("/")
+        }else{alert("El usuario no ha sido creado, por favor vuelva a intentar")}
+      })
+      .catch(err=>{
+          alert(err);
+      })
+
       props.cleanUser();
-      props.setRedirectOff();
-    
+      props.setRedirectOff(); 
     }
 
     //MANEJO DE ONCHANGE()
@@ -102,85 +128,128 @@ export function Register(props) {
         </Typography>
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                //error={input.name.length===0 ? true : false}
-                autoComplete="bday"
-                name="birthday"
+            <Grid item xs={12} sm={6}>
+            <TextField
                 variant="outlined"
                 required
                 fullWidth
-                //helperText={false ? "Este campo es requerido" : null}
-                id="birthday"
-                label="Fecha de Nacimiento"
-                type="date"
-                InputLabelProps={{
-                                    shrink: true,
-                                  }}
-                autoFocus
+                id="nombre"
+                label="Nombre"
+                name="nombre"
+                autoComplete="off"
                 onChange={(e) => handleInputChange(e)}
               />
             </Grid>
-            <Grid item xs={12}>
-              <TextField
+            <Grid item xs={12} sm={6}>
+            <TextField
                 variant="outlined"
                 required
                 fullWidth
-                id="address"
-                label="Dirección"
-                name="address"
+                id="apellido"
+                label="Apellido"
+                name="apellido"
                 autoComplete="off"
                 onChange={(e) => handleInputChange(e)}
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
+            <TextField
                 variant="outlined"
                 required
                 fullWidth
-                id="city"
-                label="Localidad"
-                name="city"
-                autoComplete="off"
-                onChange={(e) => handleInputChange(e)}
-              />
-            </Grid>
-            <Grid item xs={12} sm={8}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="Province"
-                label="Provincia"
-                name="province"
+                id="calle"
+                label="Calle"
+                name="calle"
                 autoComplete="off"
                 onChange={(e) => handleInputChange(e)}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
-              <TextField
+            <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="numero"
+                label="Num"
+                name="numero"
+                autoComplete="off"
+                onChange={(e) => handleInputChange(e)}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+            <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="departamento"
+                label="Depto"
+                name="departamento"
+                autoComplete="off"
+                onChange={(e) => handleInputChange(e)}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+            <TextField
                 variant="outlined"
                 required
                 fullWidth
                 id="cp"
-                label="Cod. Postal"
+                label="Cod.Postal"
                 name="cp"
+                autoComplete="off"
+                onChange={(e) => handleInputChange(e)}
+              />
+            </Grid>            
+            <Grid item xs={12}>
+            <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="localidad"
+                label="Localidad"
+                name="localidad"
                 autoComplete="off"
                 onChange={(e) => handleInputChange(e)}
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
+            <TextField
                 variant="outlined"
                 required
                 fullWidth
-                id="country"
-                label="Pais"
-                name="country"
+                id="provincia"
+                label="Provincia"
+                name="provincia"
                 autoComplete="off"
                 onChange={(e) => handleInputChange(e)}
               />
             </Grid>
+            <Grid item xs={12} sm={6}>
+            <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="telefono1"
+                label="Celular"
+                name="telefono1"
+                autoComplete="off"
+                onChange={(e) => handleInputChange(e)}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+            <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="telefono2"
+                label="Telefono Oficina"
+                name="telefono2"
+                autoComplete="off"
+                onChange={(e) => handleInputChange(e)}
+              />
+            </Grid>
+
+          
           </Grid>
           <Button
             type="submit"
@@ -210,7 +279,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    addUser: (input)=>dispatch(addUser(input)),
+    // addUser: (input)=>dispatch(addUser(input)),
     cleanUser:()=>dispatch(cleanUser()),
     setRedirectOff:()=>dispatch(setRedirectOff())
   }

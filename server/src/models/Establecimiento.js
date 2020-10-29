@@ -21,6 +21,10 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING(10),
       allowNull: true
     },
+    cp: {
+      type: DataTypes.STRING(5),
+      allowNull: true
+    },
    },
   )
 };

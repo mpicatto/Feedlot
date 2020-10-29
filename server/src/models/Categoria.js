@@ -11,12 +11,16 @@ module.exports = (sequelize) => {
     },
     peso_min: {
       type: DataTypes.STRING(3),
-      allowNull: true
+      allowNull: false
     },
     peso_max: {
       type: DataTypes.STRING(3),
-      allowNull: true
+      allowNull: false
     },
+    terminacion:{
+      type:DataTypes.BOOLEAN,
+      allowNull:false
+    }
    },
   )
 };

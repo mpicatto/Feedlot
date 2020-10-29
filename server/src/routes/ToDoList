@@ -1,0 +1,4 @@
+Agregar a las tablas de consignatarios y clientes externos el user id
+
+relacion clientes_operaciones(clienteId,operacionesID)
+relacion consig_operaciones(consigID, operacionesID)

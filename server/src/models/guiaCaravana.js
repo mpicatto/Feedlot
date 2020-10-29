@@ -4,15 +4,17 @@ const { Sequelize, Op, Model, DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
   // defino el modelo
-  sequelize.define('rodeo', {
-    nombre: {
-      type: DataTypes.STRING(25),
-      allowNull: false
-    },
-    userCuit: {
-      type: DataTypes.STRING(11),
-      allowNull: false
-    },    
+  sequelize.define('Guia_Caravana', {
+
+      guiaId: {
+       type: DataTypes.STRING,
+       allowNull: false
+      },
+      caravana:{
+        type: DataTypes.STRING,
+        allowNull: false
+       },
+                     
    },
   )
 };

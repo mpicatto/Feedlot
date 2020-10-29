@@ -1,4 +1,5 @@
 import React from 'react';
+import {useHistory} from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -17,7 +18,6 @@ import {setUser} from '../../actions/user.js';
 import {connect} from 'react-redux';
 /*
 
-este es el inicio de sesion, los pedazos de codigo comentados(linea 11 y 71-73) me tiraban error
 
 */
 export function Copyright() {
@@ -52,10 +52,10 @@ export function Copyright() {
 
   //LOGIN PRINCIPAL DE LA PAGINA!
   export function Login(props) {
-    
+    const history = useHistory()
     const classes = useStyles();
     const [input,setInput]=React.useState({
-      email:'',
+      username:'',
       password:''
     });
 
@@ -70,8 +70,14 @@ export function Copyright() {
     const loginUser = function(e){
       e.preventDefault();
       Axios.post('http://localhost:3001/login',input,{withCredentials:true})
-      .then(resp=>{
-        props.setUser(resp)
+      .then(res=>{
+        let data={
+          cuit:res.data.cuit,
+          razon_social:res.data.razon_social,
+          email:res.data.email,
+        }
+        props.setUser(data)
+        history.push("/establecimientos")
       })
     }
     //COMPONENTE DE MATERIAL UI
@@ -91,7 +97,7 @@ export function Copyright() {
               margin="normal"
               required
               fullWidth
-              id="email"
+              id="username"
               label="Email"
               name="username"
               autoComplete="email"

@@ -19,7 +19,16 @@ module.exports = (sequelize) => {
     },
     peso_neto:{
         type:DataTypes.STRING(10),
-    }
+        allowNull:false
+    },
+    cantAnimales:{
+      type:DataTypes.STRING(4),
+      allowNull:false
+  },
+    operacionId:{
+      type:DataTypes.STRING,
+      allowNull:false
+  }
    },
   )
 };

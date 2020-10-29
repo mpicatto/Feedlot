@@ -50,8 +50,8 @@ export function Register(props) {
   
     const classes = useStyles();
     const [input,setInput]=useState({
-        name:'',
-        lastName:'',
+        cuit:'',
+        razon_social:'',
         email:'',
         password:'',
         confirmPassword: ''
@@ -60,13 +60,13 @@ export function Register(props) {
 
     const verifyUser = function(e){
       e.preventDefault();
-      Axios.get("http://localhost:3001/user/"+input.email)
+      Axios.get("http://localhost:3001/user/"+input.cuit)
       .then(res=>{
         console.log(res.data)
         if (res.data.length===0){
           let user = {
-            name:input.name,
-            lastName:input.lastName,
+            cuit:input.cuit,
+            razon_social:input.razon_social,
             email:input.email,
             password:input.password
           }
@@ -74,16 +74,12 @@ export function Register(props) {
           props.setUser(user)
           props.setRedirect(status)
 
-        }else{alert("El mail ya esta en uso")}
+        }else{alert("El CUIT ya esta en uso")}
    
       })
+
     }
 
-    // const onSend = function(e){
-    //   e.preventDefault();
-    //   props.addUser(input)
-    
-    // }
 
     //MANEJO DE ONCHANGE()
     const handleInputChange = function(e) {
@@ -115,33 +111,33 @@ export function Register(props) {
           </Typography>
           <form className={classes.form} noValidate>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <TextField
-                  error={errors.name}
+                  error={errors.cuit}
                   //error={input.name.length===0 ? true : false}
-                  autoComplete="fname"
-                  name="name"
+                  autoComplete="cuit"
+                  name="cuit"
                   variant="outlined"
                   required
                   helperText={errors.name}
                   fullWidth
                   //helperText={false ? "Este campo es requerido" : null}
-                  id="firstName"
-                  label="Nombre/s"
+                  id="cuit"
+                  label="CUIT"
                   autoFocus
                   onChange={(e) => handleInputChange(e)}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <TextField
                   error={errors.lastName}
                   helperText={errors.lastName}
                   variant="outlined"
                   required
                   fullWidth
-                  id="lastName"
-                  label="Apellido/s"
-                  name="lastName"
+                  id="razon_social"
+                  label="Razón Social"
+                  name="razon_social"
                   autoComplete="off"
                   onChange={(e) => handleInputChange(e)}
                 />
@@ -245,11 +241,11 @@ const mapDispatchToProps = dispatch => {
     
 export function validate(input) {
   let errors = {};
- if(!input.name){
-   errors.name= 'Por favor introduzca su nombre'
+ if(!input.cuit){
+   errors.cuit= 'Por favor introduzca su número de CUIT'
  }
  if(!input.lastName){
-  errors.lastName= 'Por favor introduzca su apellido'
+  errors.razon_social= 'Por favor introduzca la razón social'
 }
   if (!input.email) {
     errors.email = 'Por favor introduzca su email';
