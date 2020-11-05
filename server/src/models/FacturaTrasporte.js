@@ -6,11 +6,11 @@ module.exports = (sequelize) => {
   // defino el modelo
   sequelize.define('Factura_Transporte', {
      numero:{
-      type:DataTypes.STRING(50),
+      type:DataTypes.STRING,
       allowNull:true
       },
      total:{
-      type:DataTypes.STRING(50),
+      type:DataTypes.STRING,
       allowNull:true
      },
      guiaId:{

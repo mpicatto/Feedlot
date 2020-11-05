@@ -8,16 +8,11 @@ let data=[]
 const filter = (props)=>{
   data=[]
   //------Filtrar caravanas(provisorio hasta definir db)--------
-  props.caravanas.map(id=>{
+ 
       caravanas.map(item=>{
-          if(item.id===id 
-            && item.establecimiento===props.establecimiento
-            && item.rodeo_id===props.rodeo 
-            && data.includes(item)===false ){
               data.push(item)
-          }
       })
-  })
+  
   console.log(data)
 }
 

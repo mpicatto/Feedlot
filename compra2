@@ -81,9 +81,9 @@ const useStyles = makeStyles((theme) => ({
 export function Step2(props) {
     const classes = useStyles()
     useEffect(()=>{
-      // setGuiaS(props.guiass)
+      setGuiaS(props.guiass)
       getInfo()
-    },[])
+    },[props.guiass,])
 
 
     const [guia, setGuia] = useState(guiaInicial)
@@ -113,6 +113,19 @@ export function Step2(props) {
   }
 }
 
+  const desbaste_calculator = function(horas){
+    if (horas<2){return 2}
+    if (horas=>2&&horas<4){return 4}
+    if (horas=>4&&horas<6){return 5}
+    if (horas=>6&&horas<8){return 6}
+    if (horas=>8&&horas<12){return 7}
+    if (horas=>12&&horas<16){return 8}
+    if (horas=>16&&horas<20){return 9}
+    if (horas=>20&&horas<24){return 10}
+    if (horas=>24&&horas<28){return 11}
+    if (horas=>28){return 12}
+    }
+  
 
 
 
@@ -196,6 +209,9 @@ export function Step2(props) {
           ...guia,
           [e.target.name]:e.target.value
         })
+       
+        
+        console.log(guia)
       }
 
       const handleTransporte = function(e) {
@@ -219,6 +235,16 @@ export function Step2(props) {
           ...animalDetail,
           [e.target.name]:e.target.value
         })
+        if(animalDetail.frame){
+          setGuia({
+            ...guia,
+            desbaste:desbaste_calculator(guia.horas)
+          })
+          setGuia({
+            ...guia,
+            pesoDesbaste:guia.peso*(guia.desbaste/100)
+          })
+        }
 
       }
       
@@ -248,7 +274,7 @@ export function Step2(props) {
             animalDetail.estado="Engorde"
             animalDetail.fechaIngreso=guia.fechaDescarga
             animalDetail.guia=guia.guia
-            animalDetail.pesoInicial=parseFloat(guia.peso)/parseInt(guia.cantAnimales)
+            animalDetail.pesoInicial=parseFloat(guia.pesoDesbaste)/parseInt(guia.cantAnimales)
             animalDetail.costoCompra=(parseFloat(props.facturaVendor.totalVendedor)/parseInt(props.facturaVendor.animales))+(parseFloat(props.facturaConsig.totalConsig)/parseInt(props.facturaVendor.animales))+(parseFloat(facturaTransporte.totalFactura)/parseInt(guia.cantAnimales))
             animalDetail.caravana=animalDetail.cug+"-"+animalDetail.manejo+"-"+animalDetail.verificador
             animalArray.push(animalDetail)
@@ -368,21 +394,18 @@ export function Step2(props) {
           factura_consig:{
             numero:props.facturaConsig.facturaConsig,
             total:props.facturaConsig.totalConsig,
-            fecha:props.facturaVendor.fechaCompra,
+            fecha:props.facturaConsig.fechaCompra,
             consignatarioCuit:props.consignatario.cuit
           },
   
           guias:guiaS
         }
 
-        console.log(operacion)
-
         Axios.post('http://localhost:3001/operaciones',operacion)
         .then(res=>{
           console.log(res.data)
-          props.cancelCompra() 
-          props.setStep("1")
-          props.setSection("")
+          // props.setStep("1")
+          // props.setSection("")  
         })
 
               
@@ -401,7 +424,7 @@ export function Step2(props) {
             <Grid >
             <form className={classes.form} noValidate>
                 <Grid className={classes.container}> 
-                    <Typography component="h1" variant="h5">
+                    <Typography component="h1" variant="h6">
                     Detalle de la GUIA
                     </Typography>
                 </Grid>
@@ -417,6 +440,24 @@ export function Step2(props) {
                           value={guia.guia}
                           onChange={(e)=>handleGUIA(e)}
                       />
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
+                    <TextField
+                          autoComplete="carga"
+                          name="fechaCarga"
+                          variant="outlined"
+                          required
+                          fullWidth
+                          id="fechaCarga"
+                          label="Fecha de Carga"
+                          type="date"
+                          InputLabelProps={{
+                                              shrink: true,
+                                            }}
+                          autoFocus
+                          value={guia.fechaCarga}
+                          onChange={(e) => handleGUIA(e)}
+                        />
                     </Grid>
                     <Grid item xs={12} sm={3}>
                     <TextField
@@ -436,6 +477,25 @@ export function Step2(props) {
                           onChange={(e) => handleGUIA(e)}
                         />
                     </Grid>
+                    <Grid item xs={12} sm={3}>
+                      <TextField
+                          variant="outlined"
+                          required
+                          fullWidth
+                          id="horas"
+                          label="Horas de Viaje:"
+                          name="horas"
+                          value={guia.horas}
+                          onChange={(e)=>handleGUIA(e)}
+                      />
+                    </Grid>
+                  </Grid>
+                  <Grid className={classes.container}> 
+                    <Typography component="h1" variant="h6">
+                    Transporte:
+                    </Typography>
+                  </Grid>
+                  <Grid container spacing={2}>
                     <Grid item xs={12} sm={3}>
                     <TextField
                         variant="outlined"
@@ -457,30 +517,6 @@ export function Step2(props) {
                         label="CUIT transportista:"
                         name="cuiTransportista"
                         value={transporte.cuiTransportista}
-                        onChange={(e)=>handleTransporte(e)}
-                    />
-                    </Grid>
-                    <Grid item xs={12} sm={3}>
-                    <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="chasis"
-                        label="Patente Chasis:"
-                        name="chasis"
-                        value={transporte.chasis}
-                        onChange={(e)=>handleTransporte(e)}
-                    />
-                    </Grid>
-                    <Grid item xs={12} sm={3}>
-                    <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="acoplado"
-                        label="Patente Acoplado:"
-                        name="acoplado"
-                        value={transporte.acoplado}
                         onChange={(e)=>handleTransporte(e)}
                     />
                     </Grid>
@@ -513,11 +549,11 @@ export function Step2(props) {
                         variant="outlined"
                         required
                         fullWidth
-                        id="pesajePlace"
-                        label="Lugar de Pesada:"
-                        name="pesajePlace"
-                        value={guia.pesajePlace}
-                        onChange={(e)=>handleGUIA(e)}
+                        id="chasis"
+                        label="Patente Chasis:"
+                        name="chasis"
+                        value={transporte.chasis}
+                        onChange={(e)=>handleTransporte(e)}
                     />
                     </Grid>
                     <Grid item xs={12} sm={3}>
@@ -525,38 +561,12 @@ export function Step2(props) {
                         variant="outlined"
                         required
                         fullWidth
-                        id="ticket"
-                        label="Ticket Balanza Nº:"
-                        name="ticket"
-                        value={guia.ticket}
-                        onChange={(e)=>handleGUIA(e)}
+                        id="acoplado"
+                        label="Patente Acoplado:"
+                        name="acoplado"
+                        value={transporte.acoplado}
+                        onChange={(e)=>handleTransporte(e)}
                     />
-                    </Grid>
-                    <Grid item xs={12} sm={3}>
-                    <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="peso"
-                        label="Peso Neto:"
-                        name="peso"
-                        value={guia.peso}
-                        onChange={(e)=>handleGUIA(e)}
-                    />
-                    </Grid>
-                    <Grid item xs={12} sm={3}>
-                    <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="cantAnimales"
-                        label="Animales:"
-                        name="cantAnimales"
-                        value={guia.cantAnimales}
-                        onChange={(e)=>handleGUIA(e)}
-                    />
-                    </Grid>
-                    <Grid item item xs={12} sm={6}>             
                     </Grid>
                     <Grid item item xs={12} sm={3}>
                     <TextField
@@ -582,10 +592,95 @@ export function Step2(props) {
                         onChange={(e) => handleFacturaTransporte(e)}
                     />
                     </Grid>
+                  </Grid>
+                  <Grid className={classes.container}> 
+                    <Typography component="h1" variant="h6">
+                    Carga:
+                    </Typography>
+                  </Grid>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={3}>
+                    <TextField
+                        variant="outlined"
+                        required
+                        fullWidth
+                        id="pesajePlace"
+                        label="Lugar de Pesada:"
+                        name="pesajePlace"
+                        value={guia.pesajePlace}
+                        onChange={(e)=>handleGUIA(e)}
+                    />
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
+                    <TextField
+                        variant="outlined"
+                        required
+                        fullWidth
+                        id="ticket"
+                        label="Ticket Balanza Nº:"
+                        name="ticket"
+                        value={guia.ticket}
+                        onChange={(e)=>handleGUIA(e)}
+                    />
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
+                    <TextField
+                        variant="outlined"
+                        required
+                        fullWidth
+                        id="cantAnimales"
+                        label="Animales:"
+                        name="cantAnimales"
+                        value={guia.cantAnimales}
+                        onChange={(e)=>handleGUIA(e)}
+                    />
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
+                    <TextField
+                        variant="outlined"
+                        required
+                        fullWidth
+                        id="peso"
+                        label="Peso s/Desbaste:"
+                        name="peso"
+                        value={guia.peso}
+                        onChange={(e)=>handleGUIA(e)}
+                    />
+                    </Grid>
+                    <Grid item item xs={12} sm={3}>
+                    </Grid>
+                    <Grid item item xs={12} sm={3}>
+                      <p>Merma por Desbaste</p>
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
+                    <TextField
+                        variant="outlined"
+                        required
+                        fullWidth
+                        id="desbaste"
+                        label="% desbaste"
+                        name="desbaste"
+                        value={guia.desbaste}
+                        onChange={(e)=>handleGUIA(e)}
+                    />
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
+                    <TextField
+                        variant="outlined"
+                        required
+                        fullWidth
+                        id="pesoDesbaste"
+                        label="Peso c/Desbaste"
+                        name="pesoDesbaste"
+                        value={guia.pesoDesbaste}
+                        onChange={(e)=>handleGUIA(e)}
+                    />
+                    </Grid>
+
                 </Grid>
                 <Grid className={classes.container}> 
-                  <Typography component="h1" variant="h5">
-                  Detalle de los Animales
+                  <Typography component="h1" variant="h6">
+                  Detalle de los Animales:
                   </Typography>
                 </Grid>
                 <Grid container spacing={2}>
@@ -661,11 +756,9 @@ export function Step2(props) {
                           onChange={(e)=>handleAnimalDetail(e)}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={4}
-                    >
-                    <Typography component="h1" variant="h6" align="left">
-                    Asignar Animal a:
-                    </Typography>
+                    <Grid item xs={12} sm={2}></Grid>
+                    <Grid item xs={12} sm={2}>
+                        <p>Asignar a:</p>
                     </Grid>
                     <Grid item xs={12} sm={5}>
                     <FormControl 

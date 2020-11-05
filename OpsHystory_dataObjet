@@ -1,0 +1,32 @@
+Objeto para tabla de historial de operaciones de compra
+
+data=[
+	{
+	operacion:{
+		id:Operacion.id,                           (usar=Operacion.findall({where:{userCuit:req.params.cuit}})
+		proveedorId:Cliente_Operacion.clienteId,   (Usar= Cliente_Operacion.findall({where:{operacionId:data.operacion.id}})		
+		proveedor:Cliente_externo.razon_social,    (Usar= Cliente_Externo.findall({where:{id:data.operacion.proveedorId}})
+		consigId:Consig_Operacion.consigId,	  (Usar= Consig_Operacion.findall({where:{operacionId:data.operacion.id}})
+		consignatario:Consignatario.razon_social   (Usar= Consignatario.findall({where:{id:data.operacion.proveedorId}})
+		fechaCompra:Factura_Cliente.fecha           (usar=Factura_Cliente.findall({where:{operationId:data.operacion.id},                           
+		                                                                                 {clienteExternoId:data.operacion.proveedorId}})
+                 cantAnimales:Operacion.cant_animales,      (salen los datos de la buscqueda de la operacion Id)
+                 estado:Operacion.estado,                        ''               ''         ''             ''
+		},
+	guias:[{
+		numero:guia.numero,                         (usar=Guia.findall({where:{operacionId:data.operacion.id}})dsp iterar sobre el resultado)      
+		cantAnimales:guia.cantAnimales,
+		fechaCarga:guia.fechaCarga,
+		fechaDescarga:guia.fechaDescarga,
+		pesoNeto:guia.peso_neto 
+		},{},{}],
+	costo:[                                                (hay que hacer busqueda en factura_cliente, factura_consig, y factura_transporte 
+		{
+		razon_social:
+		numero_factura:
+		total_factura:
+
+		]
+	
+	},{},{}
+]

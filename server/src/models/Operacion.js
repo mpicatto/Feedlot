@@ -11,7 +11,7 @@ module.exports = (sequelize) => {
         allowNull:false,
     },
     cant_animales: {
-      type: DataTypes.STRING(3),
+      type: DataTypes.STRING,
       allowNull: false
     },
     estado: {

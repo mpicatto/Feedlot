@@ -5,32 +5,103 @@ const {Operacion,Cliente_externo,Consignatario,Factura_Cliente,Factura_Consig,
     Guia_Transporte,Guia_Caravana,Consig_Operacion,Cliente_Operacion} = require('../db.js');
 const { Model } = require('sequelize');
 const { STRING } = require('sequelize');
+const { where } = require('sequelize');
 
 
 //trae las ordenes por cuit
-server.get('/:cuit',async (req,res,next)=>{
+server.get('/history/:cuit',async (req,res,next)=>{
     let cuit = req.params.cuit
-    let data ={establecimientos:[],rodeos:[],categoria:[]}
-    await Establecimiento.findAll({
-      where:{userCuit:cuit},
-    })
-    .then(stab=>{if(stab){
-      data.establecimientos=stab
-      }
-    })
-    await Rodeo.findAll({
+    let operaciones=[]
+    let clienteId=""
+    let consigId=""
+
+    await Operacion.findAll({
       where:{userCuit:cuit}
     })
-    .then(rodeo=>{
-      data.rodeos=rodeo
+    .then(ops=>{
+      ops.map(item=>{
+        operaciones.push(item.dataValues)
+      })
     })
-    await Categoria.findAll({
-      where:{userCuit:cuit}
-    })
-    .then(cat=>{
-      data.categoria=cat
-    })
-    res.send(data)
+
+    for (let i = 0; i<operaciones.length;i++){
+      let opsId=""+operaciones[i].id
+      clienteId=0
+      consigId=0
+      operaciones[i].guias=[]
+      operaciones[i].factura_cliente=[]
+      operaciones[i].cliente=[]
+      operaciones[i].factura_consig=[]
+      operaciones[i].consig=[]
+      operaciones[i].factura_transporte=[]
+      operaciones[i].transporte=[]
+      await Guia.findAll({
+        where:{operacionId:opsId}
+      })
+      .then(items=>{
+        items.map(g=>{
+          operaciones[i].guias.push(g.dataValues)
+        })
+      })
+      await Factura_Cliente.findAll({
+        where:{operacionId:operaciones[i].id}
+      })
+      .then(cliente=>{
+        cliente.map(item=>{
+          operaciones[i].factura_cliente.push(item.dataValues)
+          clienteId=item.dataValues.clienteExternoId
+        })
+      })
+      await Cliente_externo.findAll({
+        where:{id:clienteId}
+      })
+      .then(cliente=>{
+        cliente.map(item=>{
+          operaciones[i].cliente.push(item.dataValues)
+        })
+      })
+      await Factura_Consig.findAll({
+        where:{operacionId:operaciones[i].id}
+      })
+      .then(consig=>{
+        consig.map(item=>{
+          operaciones[i].factura_consig.push(item.dataValues)
+          consigId=item.dataValues.consignatarioId
+        })
+      })
+      await Consignatario.findAll({
+        where:{id:consigId}
+      })
+      .then(consig=>{
+        consig.map(item=>{
+          operaciones[i].consig.push(item.dataValues)
+        })
+      })
+     for (let j = 0;j<operaciones[i].guias.length;j++){
+       let guiaId = ""+operaciones[i].guias[j].id
+       transporteId=""
+       await Factura_Transporte.findAll({
+         where:{guiaId:guiaId}
+       })
+       .then(transporte=>{
+         transporte.map(item=>{
+          operaciones[i].factura_transporte.push(item.dataValues)
+         })
+       })
+     }
+     for(let j=0;j<operaciones[i].factura_transporte.length;j++){
+      await Transporte.findAll({
+        where:{cuit:operaciones[i].factura_transporte[j].cuiTransporte}
+      })
+      .then(transporte=>{
+        transporte.map(item=>{
+         operaciones[i].transporte.push(item.dataValues)
+        })
+      })
+     }
+    } 
+
+    res.send(operaciones)
   
   })
 
@@ -65,6 +136,9 @@ server.post('/',async(req,res)=>{
           operacionId=ops.id
           console.log('ops id='+operacionId)
       })
+      .catch(err=>{
+        console.log("error en operacion")
+      })
 
       await Cliente_externo.create({
           cuit:cliente_externo.cuit,
@@ -75,15 +149,20 @@ server.post('/',async(req,res)=>{
           email:cliente_externo.email,
           operacionId:operacionId
       })
-      .then(cliente=>{
-        
+      .then(cliente=>{        
         clienteId=cliente.id
         console.log('cliente id='+clienteId)
+      })
+      .catch(err=>{
+        console.log("error en cliente")
       })
 
       await Cliente_Operacion.create({
         clienteId:clienteId,
         operacionId:operacionId
+      })
+      .catch(err=>{
+        console.log("error en cliente_operacion")
       })
 
 
@@ -101,10 +180,16 @@ server.post('/',async(req,res)=>{
         consigId=consig.id
         console.log('consig id='+consigId)
     })
+    .catch(err=>{
+      console.log("error en consignatario")
+    })
 
     await Consig_Operacion.create({
       consigId:consigId,
       operacionId:operacionId
+    })
+    .catch(err=>{
+      console.log("error en consignatario_Ops")
     })
 
     }
@@ -112,15 +197,26 @@ server.post('/',async(req,res)=>{
           numero:factura_cliente.numero,
           total:factura_cliente.total,
           fecha:factura_cliente.fecha,
-          clienteExternoCuit:factura_cliente.clienteExternoCuit
+          clienteExternoId:clienteId,
+          operacionId:operacionId
       })
+      .catch(err=>{
+        console.log("error en factura_Cliente")
+      })
+
+      console.log('Consologeando FACTURA CONSIG' + factura_consig)
       if (factura_consig.numero){
         await Factura_Consig.create({
             numero:factura_consig.numero,
             total:factura_consig.total,
             fecha:factura_consig.fecha,
-            consignatarioCuit:factura_consig.consignatarioCuit
+            consignatarioId:consigId,
+            operacionId:operacionId
         })
+        .catch(err=>{
+          console.log("error en factura_Consig")
+        })
+        
       }
 
       for (let i =0;i<guias.length;i++){
@@ -135,10 +231,16 @@ server.post('/',async(req,res)=>{
         .then(guia=>{
           guiaId=guia.id
         })
+        .catch(err=>{
+          console.log("error en guia")
+        })
 
         await Transporte.create({
           cuit:guias[i].transporte.cuiTransportista,
           razon_social:guias[i].transporte.transportista
+        })
+        .catch(err=>{
+          console.log("error en transporte")
         })
 
         await Factura_Transporte.create({
@@ -151,6 +253,9 @@ server.post('/',async(req,res)=>{
           facturaTransporteId=factura.id
           console.log(facturaTransporteId)
         })
+        .catch(err=>{
+          console.log("error en factura_transporte")
+        })
         await Vehiculo.create({
           chasis:guias[i].transporte.chasis,
           acoplado:guias[i].transporte.acoplado,
@@ -159,15 +264,24 @@ server.post('/',async(req,res)=>{
           vehiculoId=vehiculo.id
           console.log(vehiculoId)
         })
+        .catch(err=>{
+          console.log("error en vehiculo")
+        })
         await Chofer.create({
           cuil:guias[i].transporte.cuil,
           nombre:guias[i].transporte.chofer,
+        })
+        .catch(err=>{
+          console.log("error en chofer")
         })
         await Guia_Transporte.create({
           guiaId:guiaId,
           cuiTransporte:guias[i].transporte.cuiTransportista,
           cuilChofer:guias[i].transporte.cuil,
           idVehiculo:vehiculoId
+        })
+        .catch(err=>{
+          console.log("error en guia_transporte")
         })
 
         for (let j = 0;j<guias[i].animales.length;j++){
@@ -185,9 +299,15 @@ server.post('/',async(req,res)=>{
               establecimientoId:guias[i].animales[j].establecimientoId,
               rodeoId:guias[i].animales[j].rodeoId
             })
+            .catch(err=>{
+              console.log("error en caravana")
+            })
             await Guia_Caravana.create({
               guiaId:guiaId,
               caravana:guias[i].animales[j].caravana
+            })
+            .catch(err=>{
+              console.log("error en guia_caravana")
             })
           }
         }

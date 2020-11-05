@@ -38,7 +38,7 @@ const Compras = (props) =>{
     
     const handleSection = (event, newSelection) =>{
         props.setSection(newSelection)
-        // setSection(newSelection)
+ 
       }
     
     return(

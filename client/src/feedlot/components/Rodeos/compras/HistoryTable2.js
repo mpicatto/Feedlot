@@ -41,7 +41,6 @@ function createData(cug,num_manejo,verificador,ingreso,egreso,estado,margen,deta
 }
 
 function Row(props) {
-  console.log(props)
   const { row } = props;
   const [open, setOpen] = React.useState(false);
   const classes = useRowStyles();
@@ -254,7 +253,7 @@ function populate (props,detailIcon){
 }
 
 export default function CollapsibleTable(props) { 
-  console.log(props)
+
   populate(props)
 
   return (

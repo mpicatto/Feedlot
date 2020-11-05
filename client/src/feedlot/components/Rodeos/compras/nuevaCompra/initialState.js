@@ -20,10 +20,14 @@ export const animalInicial = {
 
 export const guiaInicial ={
     guia:"",
+    fechaCarga:"",
     fechaDescarga:"",
+    horas:"",
     pesajePlace: "",
     ticket: "",
     peso: "",
+    desbaste:"",
+    pesoDesbaste:"",
     cantAnimales: 0,
     animales:[]
 }

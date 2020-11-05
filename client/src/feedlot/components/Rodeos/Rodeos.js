@@ -5,7 +5,6 @@ import {Container, CssBaseline, Grid} from '@material-ui/core'
 import {Select, FormControl,MenuItem} from '@material-ui/core'
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import { establecimientos} from "./mockData";
 import General from './general/rodeosOverview'
 import Details from './details/rodeoDetails'
 import Compras from './compras/compras'
@@ -77,6 +76,7 @@ const Rodeos = (props) =>{
         for (let i=0;i<rodeos.length;i++){
             if(rodeos[i].nombre===event.target.value){
                 selectedRodeo=rodeos[i]
+                console.log(selectedRodeo)
             }
         }
         

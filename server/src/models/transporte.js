@@ -6,13 +6,13 @@ module.exports = (sequelize) => {
   // defino el modelo
   sequelize.define('transporte', {
     cuit:{
-        type:DataTypes.STRING(11),
+        type:DataTypes.STRING,
         allowNull:false,
         primaryKey: true,
         unique: true,
     },
     razon_social: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.STRING,
       allowNull: true
     },  
    },

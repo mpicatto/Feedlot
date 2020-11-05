@@ -6,23 +6,23 @@ module.exports = (sequelize) => {
   // defino el modelo
   sequelize.define('guia', {
     numero:{
-        type:DataTypes.STRING(25),
+        type:DataTypes.STRING,
         allowNull:false,
     },
     lugar_pesaje: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.STRING,
       allowNull: true
     },
     ticket_balanza: {
-      type: DataTypes.STRING(25),
+      type: DataTypes.STRING,
       allowNull: true,
     },
     peso_neto:{
-        type:DataTypes.STRING(10),
+        type:DataTypes.STRING,
         allowNull:false
     },
     cantAnimales:{
-      type:DataTypes.STRING(4),
+      type:DataTypes.STRING,
       allowNull:false
   },
     operacionId:{
