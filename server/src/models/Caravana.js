@@ -26,23 +26,23 @@ module.exports = (sequelize) => {
         allowNull: false
       },
       fecha_ingreso: {
-        type:DataTypes.STRING(11),
+        type:DataTypes.STRING,
         allowNull: true
       },
       peso_inicio: {
-        type: DataTypes.STRING(5),
+        type: DataTypes.STRING,
         allowNull: true
       },
       peso_actual: {
-        type: DataTypes.STRING(5),
+        type: DataTypes.STRING,
         allowNull: true
       },
       fecha_pesaje: {
-        type: DataTypes.STRING(11),
+        type: DataTypes.STRING,
         allowNull: true
       },
       fecha_egreso: {
-        type: DataTypes.STRING(11),
+        type: DataTypes.STRING,
         allowNull: true
       },
       estado: {

@@ -6,7 +6,7 @@ module.exports = (sequelize) => {
   // defino el modelo
   sequelize.define('cliente_externo', {
     cuit:{
-      type:DataTypes.STRING(11),
+      type:DataTypes.STRING,
       allowNull:false,
       },
      razon_social:{
@@ -18,15 +18,15 @@ module.exports = (sequelize) => {
       allowNull:true
      },
      cp: {
-      type: DataTypes.STRING(5),
+      type: DataTypes.STRING,
       allowNull: true
     },
     telefono: {
-      type: DataTypes.STRING(10),
+      type: DataTypes.STRING,
       allowNull: true
     },
     email: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING,
       allowNull: false,
 
     },

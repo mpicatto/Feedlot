@@ -4,13 +4,13 @@ const { Sequelize, Op, Model, DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
   // defino el modelo
-  sequelize.define('factura_Consig', {
+  sequelize.define('Factura_Consig', {
      numero:{
-      type:DataTypes.STRING(50),
+      type:DataTypes.STRING,
       allowNull:true
       },
      total:{
-      type:DataTypes.STRING(50),
+      type:DataTypes.STRING,
       allowNull:true
      },
      fecha:{

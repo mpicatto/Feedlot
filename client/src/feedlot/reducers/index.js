@@ -3,7 +3,9 @@ import rodeo from './rodeo'
 import global from './global'
 import user from './user'
 import compras from './compras'
+import historialCompras from './comprasHistory'
+import seguimiento from './seguimiento'
 
 export default combineReducers({
-   rodeo, global, user, compras
+   rodeo, global, user, compras,historialCompras, seguimiento
 }) 

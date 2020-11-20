@@ -5,11 +5,10 @@ import {Container, CssBaseline, Grid} from '@material-ui/core'
 import {Select, FormControl,MenuItem} from '@material-ui/core'
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import { establecimientos} from "./mockData";
 import General from './general/rodeosOverview'
 import Details from './details/rodeoDetails'
 import Compras from './compras/compras'
-
+import Seguimiento from './seguimiento/seguimiento'
 
 //------import actions------------------
 
@@ -48,9 +47,6 @@ const Rodeos = (props) =>{
     const [rodeo,setRodeo] = useState("Elija una opción...")
     const [section,setSection] = useState('')
 
-    // payload ={establecimiento:establecimiento,
-    //     rodeo:rodeo}
-
 
     const handleEstablecimiento = (event) => {
         rodeos=[]
@@ -77,6 +73,7 @@ const Rodeos = (props) =>{
         for (let i=0;i<rodeos.length;i++){
             if(rodeos[i].nombre===event.target.value){
                 selectedRodeo=rodeos[i]
+                console.log(selectedRodeo)
             }
         }
         
@@ -164,8 +161,8 @@ const Rodeos = (props) =>{
                                 <ToggleButton value="compras" aria-label="compras" disabled={disable}>
                                 Compras
                                 </ToggleButton>
-                                <ToggleButton value="movimientos" aria-label="movimientos" disabled={disable}>
-                                    Movimientos
+                                <ToggleButton value="seguimiento" aria-label="seguimiento" disabled={disable}>
+                                    Seguimiento
                                 </ToggleButton>
                                 <ToggleButton value="ventas" aria-label="ventas" disabled={disable}>
                                     Ventas
@@ -190,6 +187,11 @@ const Rodeos = (props) =>{
                    /> : null}
                    {section ==="compras" ? <Compras 
                     rodeo={selectedRodeo.nombre}
+                    establecimiento={establecimiento}
+                    data={props.rodeo}
+                   /> : null}
+                    {section ==="seguimiento" ? <Seguimiento
+                    rodeo={selectedRodeo}
                     establecimiento={establecimiento}
                     data={props.rodeo}
                    /> : null}

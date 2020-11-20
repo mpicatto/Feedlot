@@ -6,11 +6,11 @@ module.exports = (sequelize) => {
   // defino el modelo
   sequelize.define('vehiculo', {
     chasis: {
-      type: DataTypes.STRING(7),
+      type: DataTypes.STRING,
       allowNull: true
     },
     acoplado: {
-        type: DataTypes.STRING(7),
+        type: DataTypes.STRING,
         allowNull: true
       },    
    },
