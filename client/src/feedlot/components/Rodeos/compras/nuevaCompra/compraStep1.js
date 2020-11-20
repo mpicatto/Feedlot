@@ -131,7 +131,7 @@ export function Step1(props) {
            direction="row"
            justify="space-around"
            alignItems="center"
-           pa>
+           >
             <Grid >
             <form className={classes.form} noValidate>
                 <Grid className={classes.container}> 

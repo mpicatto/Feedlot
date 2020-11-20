@@ -3,11 +3,12 @@ import { makeStyles } from '@material-ui/styles'
 import {Container, CssBaseline, Grid} from '@material-ui/core'
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import {setSection} from '../../../actions/compras'
+import {setSection} from '../../../actions/seguimiento'
 import {connect} from 'react-redux';
+import Pesaje from './pesaje';
+import Movimiento from './movimiento'
 
-import NuevaCompra from './nuevaCompra'
-import HistorialCompras from './comprasHistory'
+
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -29,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     }
   }));
  
-const Compras = (props) =>{
+const Seguimiento = (props) =>{
     useEffect(()=>{
       setSection(props.seccion)
     },[props.seccion])
@@ -43,7 +44,7 @@ const Compras = (props) =>{
     
     return(
 
-        <Container component="main" maxWidth="lg">
+        <Container component="main" maxWidth='lg'>
             <CssBaseline />
             <div className={classes.paper}>
                 <Grid >
@@ -54,23 +55,25 @@ const Compras = (props) =>{
                     aria-label="section"
                     size="large"
                     >
-                            <ToggleButton value="nuevaCompra" aria-label="nuevaCompra" >
-                                Nueva Compra
+                            <ToggleButton value="pesaje" aria-label="pesaje" >
+                                Pesaje
                             </ToggleButton>
-                            <ToggleButton value="historial" aria-label="historial" >
-                               Historial de Compras
+                            <ToggleButton value="movimientos" aria-label="movimientos" >
+                               Movimiento 
                             </ToggleButton>
          
                     </ToggleButtonGroup>
                 </Grid>
                 </div>
                 <Grid >
-                    {section ==="nuevaCompra" ? <NuevaCompra 
-                    rodeo={props.rodeo}
+                    {section ==="pesaje" ? <Pesaje
+                    rodeo={props.rodeo.nombre}
+                    rodeoId={props.rodeo.id}
                     establecimiento={props.establecimiento}
                     data={props.data} /> : null}
-                    {section ==="historial" ? <HistorialCompras 
-                    rodeo={props.rodeo}
+                    {section ==="movimientos" ? <Movimiento 
+                    rodeo={props.rodeo.nombre}
+                    rodeoId={props.rodeo.id}
                     establecimiento={props.establecimiento}
                    /> : null}
                 </Grid>
@@ -82,7 +85,7 @@ const Compras = (props) =>{
 }
 const mapStateToProps = state => {		
   return {		
-    seccion: state.compras.section
+    seccion: state.seguimiento.section
   }		
 }
 
@@ -93,4 +96,4 @@ const mapDispatchToProps = dispatch => {
 }
     
   
-export default connect(mapStateToProps, mapDispatchToProps)(Compras)
+export default connect(mapStateToProps, mapDispatchToProps)(Seguimiento)
