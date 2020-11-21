@@ -9,6 +9,7 @@ import General from './general/rodeosOverview'
 import Details from './details/rodeoDetails'
 import Compras from './compras/compras'
 import Seguimiento from './seguimiento/seguimiento'
+import Ventas from './ventas/ventas'
 
 //------import actions------------------
 
@@ -191,6 +192,11 @@ const Rodeos = (props) =>{
                     data={props.rodeo}
                    /> : null}
                     {section ==="seguimiento" ? <Seguimiento
+                    rodeo={selectedRodeo}
+                    establecimiento={establecimiento}
+                    data={props.rodeo}
+                   /> : null}
+                    {section ==="ventas" ? <Ventas
                     rodeo={selectedRodeo}
                     establecimiento={establecimiento}
                     data={props.rodeo}
