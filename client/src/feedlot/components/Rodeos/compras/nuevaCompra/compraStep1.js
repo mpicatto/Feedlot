@@ -431,12 +431,11 @@ export function Step1(props) {
                                 Continuar
                             </Button>
                     </Grid>
-                </Grid>
-                    
+                </Grid>                  
             </form>
            </Grid>
+
           </Grid>
-     
           </Container>
         </React.Fragment>
     

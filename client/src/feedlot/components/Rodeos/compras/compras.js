@@ -30,9 +30,11 @@ const useStyles = makeStyles((theme) => ({
   }));
  
 const Compras = (props) =>{
+    
     useEffect(()=>{
       setSection(props.seccion)
     },[props.seccion])
+
     const classes = useStyles()
     const [section,setSection] = useState("")
     

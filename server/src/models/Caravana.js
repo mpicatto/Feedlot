@@ -47,7 +47,7 @@ module.exports = (sequelize) => {
       },
       estado: {
         type: DataTypes.ENUM,
-        values:["Engorde","enfermo","vendido","muerto"],
+        values:["engorde","enfermo","aFeria","aDestino","vendido","muerto"],
         allowNull: false
       },
       rodeoId:{

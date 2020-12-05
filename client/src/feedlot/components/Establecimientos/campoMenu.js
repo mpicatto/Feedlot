@@ -61,7 +61,7 @@ import { Grid } from '@material-ui/core';
         direction='column'>
         <hr></hr>
           {props.rodeo.establecimientos.map(item=>{
-            return <Link to={'/feedlot/sitrep'}>{item.nombre}</Link>
+            return <Link to={'/feedlot/rodeos'}>{item.nombre}</Link>
           })}
         </Grid>
     )
