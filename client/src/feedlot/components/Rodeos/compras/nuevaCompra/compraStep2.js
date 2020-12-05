@@ -81,8 +81,9 @@ const useStyles = makeStyles((theme) => ({
 export function Step2(props) {
     const classes = useStyles()
     useEffect(()=>{
-      // setGuiaS(props.guiass)
-      getInfo()
+      setEstablecimiento(props.currentEstablecimiento.nombre)
+      setRodeo(props.currentRodeo.nombre)
+      getRodeos()
     },[])
 
 
@@ -94,17 +95,17 @@ export function Step2(props) {
     const [animalArray, setAnimalArray] = useState(arrayInit)
     const [ifTable, setIfTable]=useState(false)
     const [ifTable2, setIfTable2]=useState(false)
-    const [establecimiento, setEstablecimiento] = useState(props.establecimiento)
-    const [rodeo,setRodeo] = useState(props.rodeoElegido)
+    const [establecimiento, setEstablecimiento] = useState("")
+    const [rodeo,setRodeo] = useState("")
     const [endOfGuia,setEndOfGuia] = useState(true)
     const [vendorErrors, setVendorErrors] = useState({})
- 
-    const getInfo = function(){
+
+    const getRodeos = function(){
       rodeos=[]    
-      for (let i=0;i<props.data.establecimientos.length;i++){
-      if(props.data.establecimientos[i].nombre===establecimiento){
-        let establecimientoId=props.data.establecimientos[i].id
-        props.data.rodeos.map(item=>{
+      for (let i=0;i<props.establecimientos.length;i++){
+      if(props.establecimientos[i].nombre===props.currentEstablecimiento){
+        let establecimientoId=props.establecimientos[i].id
+        props.rodeos.map(item=>{
           if(item.establecimientoId===establecimientoId){
             rodeos.push(item)
           }
@@ -112,9 +113,7 @@ export function Step2(props) {
       }console.log(rodeos)
   }
 }
-
-
-
+ 
 
 //-------------function to add data to table-----------------------------------
     const [page, setPage] = React.useState(0);
@@ -680,10 +679,10 @@ export function Step2(props) {
                                         value={establecimiento}
                                         onChange={handleEstablecimiento}
                                         label="establecimiento"
-                                        displayEmpty
+                            
                                         >
                                         <MenuItem value={"Elija una opción..."} disabled >Elija una opción...</MenuItem>
-                                        {props.data.establecimientos.map(item =>{
+                                        {props.establecimientos.map(item =>{
                                             return <MenuItem value={item.nombre}>{item.nombre}</MenuItem>
                                         })}
                                     </Select>
@@ -691,22 +690,21 @@ export function Step2(props) {
                     </Grid>
                     <Grid item xs={12} sm={3}>
                     <FormControl variant="filled" className={classes.formControl}>
-                                <label>Rodeo:</label>
-                                    <Select
-                                        labelId="label"
-                                        id="demo-simple-select-outlined"
-                                        name="rodeo"
-                                        value={rodeo}
-                                        onChange={handleRodeo}
-                                        label="Rodeo"
-                                        displayEmpty
-                                        >
-                                         <MenuItem value={"Elija una opción..."} disabled >Elija una opción...</MenuItem>
-                                        {rodeos.map(item =>{
-                                            return <MenuItem value={item.nombre}>{item.nombre}</MenuItem>
-                                        })}
-                                    </Select>
-                                </FormControl>
+                        <label>Rodeo:</label>
+                            <Select
+                                labelId="label"
+                                id="nuevoRodeo"
+                                name="nuevoRodeo"
+                                onChange={(e)=>handleRodeo(e)}
+                                label="Rodeo"
+                                value={rodeo}
+                                >
+                                  <MenuItem value={"Elija una opción..."} disabled >Elija una opción...</MenuItem>
+                                {props.rodeos.map(item =>{
+                                    return <MenuItem value={item.id}>{item.nombre}</MenuItem>
+                                })}
+                            </Select>
+                        </FormControl>
                             </Grid>
                             <Grid item xs={12} sm={6}></Grid>
                         {endOfGuia?<Grid item xs={12} sm={3}>
@@ -847,7 +845,11 @@ const mapStateToProps = state => {
     consignatario:state.compras.consignatario,
     facturaVendor:state.compras.facturaVendor,
     facturaConsig:state.compras.facturaConsig,
-    user:state.user.user
+    user:state.user.user,
+    establecimientos:state.rodeo.establecimientos,
+    rodeos:state.rodeo.rodeos,
+    currentRodeo:state.rodeo.currentRodeo,
+    currentEstablecimiento:state.rodeo.currentEstablecimiento
   }		
 }
 

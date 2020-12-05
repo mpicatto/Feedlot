@@ -1,5 +1,6 @@
 import React,{useState,useEffect} from 'react';
 import Axios from 'axios';
+import {connect} from 'react-redux';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
@@ -68,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     }
   }));
 
-export default function Pesaje(props) {
+export function Pesaje(props) {
     const classes = useStyles()
 
     useEffect(()=>{
@@ -76,7 +77,7 @@ export default function Pesaje(props) {
       setCaravanaSelect(false)
       getInfo()
       
-    },[])
+    },[props.currentRodeo.id])
 
     const [newPromedio, setNewPromedio] = useState("")
     const [caravanaSelect,setCaravanaSelect]=useState("")
@@ -88,7 +89,7 @@ export default function Pesaje(props) {
  
     const getInfo = function(){
       query=[]
-      Axios.get('http://localhost:3001/rodeo/caravanas/'+props.rodeoId)
+      Axios.get('http://localhost:3001/rodeo/caravanas/'+props.currentRodeo.id)
       .then(res=>{
         let suma = 0
         let promedio = 0 
@@ -214,7 +215,7 @@ export default function Pesaje(props) {
               <Grid item xs={12}>
                   <Grid className={classes.container}> 
                    <Typography component="h1" variant="h5">
-                        Peso Promedio del Rodeo {props.rodeo}:{pesoPromedio} Kg.
+                        Peso Promedio del Rodeo {props.currentRodeo.nombre}:{pesoPromedio} Kg.
                     </Typography>
                   </Grid>
                   <Grid container spacing={2}>
@@ -428,4 +429,15 @@ export default function Pesaje(props) {
           </Container> 
       )
  }
+
+ const mapStateToProps = state => {		
+  return {		
+    establecimientos:state.rodeo.establecimientos,
+    rodeos:state.rodeo.rodeos,
+    currentRodeo:state.rodeo.currentRodeo,
+    currentEstablecimiento:state.rodeo.currentEstablecimiento
+  }		
+}
+
+export default connect(mapStateToProps)(Pesaje);  
 

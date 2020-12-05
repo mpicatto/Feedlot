@@ -81,7 +81,8 @@ export function Movimientos(props) {
       setCaravanaSelect(false)
       getInfo()
       parametroCategoria()
-    },[])
+      setSobrePeso(false)
+    },[props.currentRodeo.id])
 
     const [moveTo, setMoveTo] = useState("")
     const [caravanaSelect,setCaravanaSelect]=useState("")
@@ -96,7 +97,7 @@ export function Movimientos(props) {
  
     const getInfo = function(){
       query=[]
-      Axios.get('http://localhost:3001/rodeo/caravanas/'+props.rodeoId)
+      Axios.get('http://localhost:3001/rodeo/caravanas/'+props.currentRodeo.id)
       .then(res=>{
         let suma = 0
         let promedio = 0 
@@ -218,7 +219,7 @@ export function Movimientos(props) {
         console.log(categoryMin)
         console.log(categoryMax)
         if (categoryMin<=pesoPromedio&&categoryMax>pesoPromedio){
-        await Axios.put('http://localhost:3001/rodeo/caravanas/move_to/'+props.rodeoId,newRodeo)
+        await Axios.put('http://localhost:3001/rodeo/caravanas/move_to/'+props.currentRodeo.id,newRodeo)
         .then(res=>{
           alert('Peso promedio modificado con exito')
         })
@@ -293,7 +294,7 @@ export function Movimientos(props) {
               <Grid item xs={12}>
                   <Grid className={classes.container}> 
                    <Typography component="h1" variant="h5">
-                        Peso Promedio del Rodeo {props.rodeo}:{pesoPromedio} Kg.
+                        Peso Promedio del Rodeo {props.currentRodeo.nombre}:{pesoPromedio} Kg.
                     </Typography>
                   </Grid>
                   {sobrePeso ? 
@@ -500,7 +501,7 @@ export function Movimientos(props) {
                                 labelId="label"
                                 id="nuevoRodeo"
                                 name="nuevoRodeo"
-                                // value={rodeo}
+                                value={rodeo}
                                 onChange={(e)=>handleMove(e)}
                                 label="Rodeo"
                                 displayEmpty
@@ -542,7 +543,9 @@ export function Movimientos(props) {
 
     establecimientos:state.rodeo.establecimientos,
     rodeos:state.rodeo.rodeos,
-    categorias:state.rodeo.categoria
+    categorias:state.rodeo.categoria,
+    currentRodeo:state.rodeo.currentRodeo,
+    currentEstablecimiento:state.rodeo.currentEstablecimiento
   }		
 }
 

@@ -66,16 +66,8 @@ const Seguimiento = (props) =>{
                 </Grid>
                 </div>
                 <Grid >
-                    {section ==="pesaje" ? <Pesaje
-                    rodeo={props.rodeo.nombre}
-                    rodeoId={props.rodeo.id}
-                    establecimiento={props.establecimiento}
-                    data={props.data} /> : null}
-                    {section ==="movimientos" ? <Movimiento 
-                    rodeo={props.rodeo.nombre}
-                    rodeoId={props.rodeo.id}
-                    establecimiento={props.establecimiento}
-                   /> : null}
+                    {section ==="pesaje" ? <Pesaje /> : null}
+                    {section ==="movimientos" ? <Movimiento /> : null}
                 </Grid>
              
             

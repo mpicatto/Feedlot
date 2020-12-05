@@ -1,6 +1,7 @@
 const server = require('express').Router();
-const { Sequelize } = require('sequelize');
-const { Rodeo, Caravana} = require('../db.js');
+const { Sequelize,Op } = require('sequelize');
+const {  Rodeo, Caravana} = require('../db.js');
+const { where } = require('sequelize');
 
 
 //trae los rodeos de un establecimiento
@@ -22,6 +23,48 @@ server.get('/caravanas/:rodeoId',(req,res,next)=>{
   .then(user=>{if(user){res.send(user)
   return}
   })})
+
+//trae las caravanas de un rodeo filtradas por peso
+  server.get('/caravanas/:rodeoId/:peso',(req,res,next)=>{
+    let rodeoId = req.params.rodeoId
+    let peso=req.params.peso
+
+    console.log(peso)
+    Caravana.findAll({
+      where:{rodeoId:rodeoId,
+      peso_actual:{[Op.gte]:peso}}
+    })
+    .then(user=>{if(user){res.send(user)
+    return}
+    })})
+
+    //trae las caravanas de todos los rodeos filtradas por peso
+  server.get('/all_caravanas/:cuit/:peso',async(req,res,next)=>{
+    let cuit = req.params.cuit
+    let peso=req.params.peso
+    let data={rodeos:[], caravanas:[]}
+    await Rodeo.findAll({
+      where:{userCuit:cuit}
+    })
+    .then(rodeo=>{
+      data.rodeos=rodeo
+    })
+
+    for (let i =0;i<data.rodeos.length;i++){
+      let rodeoId = data.rodeos[i].id
+      await Caravana.findAll({
+        where:{rodeoId:rodeoId.toString(),
+        peso_actual:{[Op.gte]:peso}}
+      })
+      .then(animal=>{
+        animal.map(item=>{
+          data.caravanas.push(item.dataValues) 
+        })
+      })
+    }
+
+    res.send(data.caravanas)
+  })
 
       //edita peso promedio de las caravanas de un rodeo 
   server.put('/caravanas/peso_promedio/:rodeoId',async (req,res,next)=>{

@@ -3,9 +3,11 @@ import { makeStyles } from '@material-ui/styles'
 import {Container, CssBaseline, Grid} from '@material-ui/core'
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import {setSection} from '../../../actions/compras'
+import {setSection, keepFacturaConsig} from '../../../actions/compras'
 import {connect} from 'react-redux';
-import NuevaVenta from './nuevaVenta'
+import NuevaOrden from './nuevaOrden'
+import Guias from './guias'
+import Facturacion from './facturacion'
 import HistorialVentas from './ventasHistory'
 
 const useStyles = makeStyles((theme) => ({
@@ -46,42 +48,42 @@ const Ventas = (props) =>{
             <CssBaseline />
             <div className={classes.paper}>
                 <Grid >
-                    <ToggleButtonGroup
-                    value={section}
-                    exclusive
-                    onChange={handleSection}
-                    aria-label="section"
-                    size="large"
-                    >
-                            <ToggleButton value="nuevaVenta" aria-label="nuevaVenta" >
-                                Nueva Venta
-                            </ToggleButton>
-                            <ToggleButton value="historial" aria-label="historial" >
-                               Historial de Ventas
-                            </ToggleButton>
-         
-                    </ToggleButtonGroup>
+                  <ToggleButtonGroup
+                  value={section}
+                  exclusive
+                  onChange={handleSection}
+                  aria-label="section"
+                  size="large"
+                  >
+                    <ToggleButton value="nuevaOrden" aria-label="nuevaOrden" >
+                        Nueva Orden
+                    </ToggleButton>
+                    <ToggleButton value="guias" aria-label="guias" >
+                        Carga de Guias
+                    </ToggleButton>
+                    <ToggleButton value="facturacion" aria-label="facturacion" >
+                        Facturacion
+                    </ToggleButton>
+                    <ToggleButton value="historial" aria-label="historial" >
+                        Historial de Ventas
+                    </ToggleButton>
+        
+                  </ToggleButtonGroup>
                 </Grid>
                 </div>
                 <Grid >
-                    {section ==="nuevaVenta" ? <NuevaVenta 
-                    rodeo={props.rodeo}
-                    establecimiento={props.establecimiento}
-                    data={props.data} /> : null}
-                    {section ==="historial" ? <HistorialVentas
-                    rodeo={props.rodeo}
-                    establecimiento={props.establecimiento}
-                   /> : null}
+                    {section ==="nuevaOrden" ? <NuevaOrden /> : null}
+                    {section ==="guias" ? <Guias /> : null}
+                    {section ==="facturacion" ? <Facturacion /> : null}
+                    {section ==="historial" ? <HistorialVentas /> : null}
                 </Grid>
-             
-            
         </Container>
         
     )
 }
 const mapStateToProps = state => {		
   return {		
-    seccion: state.compras.section
+    seccion: state.ventas.section
   }		
 }
 

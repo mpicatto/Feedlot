@@ -5,6 +5,7 @@ import {Container, CssBaseline, Grid} from '@material-ui/core'
 import {Select, FormControl,MenuItem} from '@material-ui/core'
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import {setCurrentRodeo} from '../../actions/rodeo'
 import General from './general/rodeosOverview'
 import Details from './details/rodeoDetails'
 import Compras from './compras/compras'
@@ -17,6 +18,7 @@ import Ventas from './ventas/ventas'
 
 let rodeos=[]
 let selectedRodeo={}
+let selectedEstab={}
 let disable=true
 // let payload ={}
 const useStyles = makeStyles((theme) => ({
@@ -42,12 +44,9 @@ const useStyles = makeStyles((theme) => ({
 const Rodeos = (props) =>{
     const classes = useStyles()
 
-    console.log(props.establecimiento)
-
     const [establecimiento, setEstablecimiento] = useState("Elija una opción...")
     const [rodeo,setRodeo] = useState("Elija una opción...")
     const [section,setSection] = useState('')
-
 
     const handleEstablecimiento = (event) => {
         rodeos=[]
@@ -55,14 +54,15 @@ const Rodeos = (props) =>{
         setRodeo("Elija una opción...")
         for (let i=0;i<props.rodeo.establecimientos.length;i++){
             if(props.rodeo.establecimientos[i].nombre===event.target.value){
-                let establecimientoId = props.rodeo.establecimientos[i].id
+                selectedEstab = props.rodeo.establecimientos[i]
                 props.rodeo.rodeos.map(item=>{
-                    if (item.establecimientoId===establecimientoId){
+                    if (item.establecimientoId===selectedEstab.id){
                         rodeos.push(item)
                     }
                 })
             }
         }
+        console.log(props.rodeo)
         setSection('')
         disable=true
     };
@@ -70,14 +70,17 @@ const Rodeos = (props) =>{
     const handleRodeo = (event) => {
         setRodeo(event.target.value);
                    
-
         for (let i=0;i<rodeos.length;i++){
             if(rodeos[i].nombre===event.target.value){
                 selectedRodeo=rodeos[i]
-                console.log(selectedRodeo)
             }
         }
-        
+        let data ={
+            establecimiento:selectedEstab,
+            rodeo:selectedRodeo
+        }
+        console.log(data)
+        props.setCurrentRodeo(data)
         // setSection('general')
         if (establecimiento!=="Elija una opción..."){
             disable=false
@@ -187,19 +190,16 @@ const Rodeos = (props) =>{
                     establecimiento={establecimiento}
                    /> : null}
                    {section ==="compras" ? <Compras 
-                    rodeo={selectedRodeo.nombre}
-                    establecimiento={establecimiento}
-                    data={props.rodeo}
                    /> : null}
                     {section ==="seguimiento" ? <Seguimiento
-                    rodeo={selectedRodeo}
-                    establecimiento={establecimiento}
-                    data={props.rodeo}
+                    // rodeo={selectedRodeo}
+                    // establecimiento={establecimiento}
+                    // data={props.rodeo}
                    /> : null}
                     {section ==="ventas" ? <Ventas
-                    rodeo={selectedRodeo}
-                    establecimiento={establecimiento}
-                    data={props.rodeo}
+                    // rodeo={selectedRodeo}
+                    // establecimiento={establecimiento}
+                    // data={props.rodeo}
                    /> : null}
                 </Grid> 
             </div>
@@ -214,5 +214,11 @@ const mapStateToProps = state => {
         rodeo:state.rodeo
     }		
   }
+
+  const mapDispatchToProps = dispatch => {
+    return {
+      setCurrentRodeo:(data)=>dispatch(setCurrentRodeo(data)),
+    }
+  }
   
-  export default connect(mapStateToProps)(Rodeos);  
+  export default connect(mapStateToProps,mapDispatchToProps)(Rodeos);  
