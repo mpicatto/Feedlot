@@ -501,10 +501,9 @@ export function Movimientos(props) {
                                 labelId="label"
                                 id="nuevoRodeo"
                                 name="nuevoRodeo"
-                                value={rodeo}
+                                value={newRodeo}
                                 onChange={(e)=>handleMove(e)}
                                 label="Rodeo"
-                                displayEmpty
                                 >
                                   <MenuItem value={"Elija una opción..."} disabled >Elija una opción...</MenuItem>
                                 {props.rodeos.map(item =>{

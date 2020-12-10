@@ -1,6 +1,7 @@
 import React,{useEffect,useState} from 'react';
+import Axios from 'axios'
 import {connect} from 'react-redux';
-import {setList,clearList,setTableAll, setTable} from '../../../actions/ventas'
+import {setTable,} from '../../../actions/ventas'
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { lighten, makeStyles } from '@material-ui/core/styles';
@@ -139,7 +140,45 @@ const useToolbarStyles = makeStyles((theme) => ({
 
 const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
-  const { numSelected } = props;
+  const { numSelected,selected,comprador,consignatario,tipoVenta,userCuit } = props;
+  const [section, setSection]=useState()
+
+  const crearOrden = ()=>{
+    
+    let operacion ={
+      data:{
+        tipo:tipoVenta,
+        estado:"incompleta",
+        userCuit:userCuit,
+        cant_animales:numSelected
+      },
+      cliente_externo:{
+        cuit:comprador.vendor_cuit,
+        razon_social:comprador.vendor_razon_social,
+        direccion_fiscal:comprador.vendor_addressFiscal,
+        cp:comprador.vendor_cp,
+        telefono:comprador.vendor_celular,
+        email:comprador.vendor_email,
+      },
+      consignatario:{
+        cuit:consignatario.cuit,
+        razon_social:consignatario.razon_social,
+        direccion_fiscal:consignatario.addressFiscal,
+        cp:consignatario.cp,
+        telefono:consignatario.celular,
+        email:consignatario.email,
+      },
+
+      animales:selected
+    }
+
+    Axios.post('http://localhost:3001/ventas',operacion)
+    .then(res=>{
+      alert('Orden de Venta Creada')
+      window.location.reload();
+    })
+
+  }
 
   return (
     <Toolbar
@@ -160,7 +199,11 @@ const EnhancedTableToolbar = (props) => {
       {numSelected > 0 ? (
         <Tooltip title="Delete">
           <IconButton aria-label="delete">
-            <Button variant="contained" color="primary">Crear Orden</Button>
+            <Button 
+            variant="contained" 
+            color="primary"
+            onClick={()=>crearOrden()}
+            >Crear Orden</Button>
           </IconButton>
         </Tooltip>
       ) : (null)}
@@ -199,8 +242,7 @@ const useStyles = makeStyles((theme) => ({
 export function EnhancedTable(props) {
   const classes = useStyles();
   useEffect(()=>{
-
-    setData(props.caravanas)
+   setData(props.caravanas)
   },[props.caravanas,])
 
 const [data, setData]=useState(props.caravanas)
@@ -246,11 +288,9 @@ populate(data)
     if (event.target.checked) {
       const newSelecteds = rows.map((n) => n.caravana);
       setSelected(newSelecteds);
-      console.log(selected)
       return;
     }
     setSelected([]);
-    console.log(selected)
   };
 
   const handleClick = (event, name) => {
@@ -271,7 +311,6 @@ populate(data)
     }
 
     setSelected(newSelected);
-    console.log(selected)
   };
 
   const handleChangePage = (event, newPage) => {
@@ -294,7 +333,14 @@ populate(data)
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar 
+        numSelected={selected.length} 
+        selected={selected}
+        comprador={props.comprador}
+        consignatario={props.consignatario}
+        tipoVenta={props.tipoVenta}
+        userCuit={props.userCuit}
+        />
         <TableContainer>
           <Table
             className={classes.table}
@@ -374,9 +420,18 @@ populate(data)
 const mapStateToProps = state => {		
     return{
       caravanas:state.ventas.array,
+      userCuit:state.user.user.cuit,
+      comprador:state.ventas.comprador,
+      consignatario:state.ventas.consignatario,
+      tipoVenta:state.ventas.tipoComprador
     }
   }
-  
 
-  export default connect(mapStateToProps)(EnhancedTable);
+const mapDispatchToProps = dispatch => {
+  return {
+    setTable:(status)=>dispatch(setTable(status))
+  }
+}  
+  
+  export default connect(mapStateToProps, mapDispatchToProps)(EnhancedTable,EnhancedTableToolbar);
   

@@ -108,8 +108,8 @@ server.get('/history/:cuit',async (req,res,next)=>{
 
 //crear una operacion
 server.post('/',async(req,res)=>{
- 
-  let {
+ //----------DATA INLET----------------------- 
+ let {
     data,
     cliente_externo,
     consignatario,
@@ -117,6 +117,8 @@ server.post('/',async(req,res)=>{
     factura_consig,
     guias
     } = req.body;
+    //-----------AUX VARIABLES--------------------------
+
     let operacionId=''
     let guiaId=''
     let facturaTransporteId=''
@@ -124,6 +126,9 @@ server.post('/',async(req,res)=>{
     let clienteId=''
     let consigId=''
     console.log(guias[0].animales)
+
+    //------------SEQUELIZE-----------------------------
+
      //se crea la categoria
      await Operacion.create({
           tipo:data.tipo,
@@ -147,7 +152,8 @@ server.post('/',async(req,res)=>{
           cp:cliente_externo.cp,
           telefono:cliente_externo.telefono,
           email:cliente_externo.email,
-          operacionId:operacionId
+          operacionId:operacionId,
+          userID:data.userCuit
       })
       .then(cliente=>{        
         clienteId=cliente.id

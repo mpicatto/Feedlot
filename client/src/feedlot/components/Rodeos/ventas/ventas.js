@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/styles'
 import {Container, CssBaseline, Grid} from '@material-ui/core'
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import {setSection, keepFacturaConsig} from '../../../actions/compras'
+import {setSection,} from '../../../actions/ventas'
 import {connect} from 'react-redux';
 import NuevaOrden from './nuevaOrden'
 import Guias from './guias'

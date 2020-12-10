@@ -1,4 +1,4 @@
-import {SET_ARRAY,SET_LIST,CLEAR_LIST,KEEP_VENDOR,KEEP_CONSIG,TIPO_VENTA, SET_STEP,
+import {SET_ARRAY,KEEP_VENDOR,KEEP_CONSIG,TIPO_VENTA, SET_STEP,
   CANCEL_VENTA, SET_SECTION,SET_TABLE} from '../actions/ventas'
 
 const initialState={
@@ -24,6 +24,7 @@ const initialState={
     cp:"",
     email:"",
     celular:""},
+ 
 }
 
 export default function global(state = initialState, action){
@@ -31,20 +32,6 @@ export default function global(state = initialState, action){
         return{
           ...state,
           array:action.payload
-             }
-      }
-
-      if (action.type === SET_LIST){
-        return{
-          ...state,
-          list:action.payload
-             }
-      }
-
-      if (action.type === CLEAR_LIST){
-        return{
-          ...state,
-          list:0
              }
       }
 
@@ -96,6 +83,8 @@ export default function global(state = initialState, action){
           table1:action.payload,
              }
       }
+
+
 
       return state  
 }
