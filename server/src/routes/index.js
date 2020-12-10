@@ -5,6 +5,7 @@ const catRouter = require('./categoria')
 const RouterEstablecimiento = require('./establecimiento')
 const rodeoRouter = require('./rodeo')
 const opsRouter = require('./operaciones')
+const ventasRouter = require('./ventas')
 
 
 //--------------------------------------------------------
@@ -15,4 +16,5 @@ router.use('/categoria', catRouter)
 router.use('/establecimiento', RouterEstablecimiento)
 router.use('/rodeo', rodeoRouter)
 router.use('/operaciones', opsRouter)
+router.use('/ventas', ventasRouter)
 module.exports = router

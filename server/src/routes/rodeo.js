@@ -18,7 +18,8 @@ server.get('/:establecimientoId',(req,res,next)=>{
 server.get('/caravanas/:rodeoId',(req,res,next)=>{
   let rodeoId = req.params.rodeoId
   Caravana.findAll({
-    where:{rodeoId:rodeoId}
+    where:{rodeoId:rodeoId,
+      [Op.or]:[{estado:'Engorde'},{estado:'enfermo'}]}
   })
   .then(user=>{if(user){res.send(user)
   return}
@@ -32,7 +33,8 @@ server.get('/caravanas/:rodeoId',(req,res,next)=>{
     console.log(peso)
     Caravana.findAll({
       where:{rodeoId:rodeoId,
-      peso_actual:{[Op.gte]:peso}}
+      peso_actual:{[Op.gte]:peso},
+      [Op.or]:[{estado:'Engorde'},{estado:'enfermo'}]}
     })
     .then(user=>{if(user){res.send(user)
     return}
@@ -44,7 +46,8 @@ server.get('/caravanas/:rodeoId',(req,res,next)=>{
     let peso=req.params.peso
     let data={rodeos:[], caravanas:[]}
     await Rodeo.findAll({
-      where:{userCuit:cuit}
+      where:{userCuit:cuit,
+      }
     })
     .then(rodeo=>{
       data.rodeos=rodeo
@@ -54,7 +57,8 @@ server.get('/caravanas/:rodeoId',(req,res,next)=>{
       let rodeoId = data.rodeos[i].id
       await Caravana.findAll({
         where:{rodeoId:rodeoId.toString(),
-        peso_actual:{[Op.gte]:peso}}
+        peso_actual:{[Op.gte]:peso},
+        [Op.or]:[{estado:'Engorde'},{estado:'enfermo'}]}
       })
       .then(animal=>{
         animal.map(item=>{
@@ -73,7 +77,9 @@ server.get('/caravanas/:rodeoId',(req,res,next)=>{
   let caravanas=[]
   console.log(data)
   await Caravana.findAll({
-  where:{rodeoId:rodeoId}
+  where:{rodeoId:rodeoId,
+    [Op.or]:[{estado:'Engorde'},{estado:'enfermo'}]  
+  }
   })
   .then(caravana=>{
     caravana.map(item =>{
@@ -115,7 +121,9 @@ server.get('/caravanas/:rodeoId',(req,res,next)=>{
     let caravanas=[]
     console.log(data)
     await Caravana.findAll({
-    where:{rodeoId:rodeoId}
+    where:{rodeoId:rodeoId,
+      [Op.or]:[{estado:'Engorde'},{estado:'enfermo'}]
+      }
     })
     .then(caravana=>{
       caravana.map(item =>{
